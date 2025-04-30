@@ -16,6 +16,7 @@ import log from "./utils/log.js";
 import NodeCache from "node-cache"
 import messageHandler from "./handler/messagehandler.js";
 import fs from "fs-extra";
+import express from "express";
 
 const { 
     syncFullHistory, 
@@ -110,5 +111,9 @@ async function initialize() {
     log.error(error);
   }
 }
-
+const  app = express();
+app.post("/", async  (res,rej) => {
+    res.send("bot running")
+})
+app.listen(8080,"0.0.0.0",()=> log.info(`bot running on port 8080`))
 initialize();
