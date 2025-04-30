@@ -131,13 +131,13 @@ export default async ({ font, sock, event }) => {
     }
     if (!isPrefixed) return;
     const [commandName, ...commandArgs] = args
-      .slice(global.client.PREFIX.length)
+      .slice(global.client.config.PREFIX.length)
       .trim()
       .split(" ");
 
     if (!global.client.commands.has(commandName.toLowerCase())) {
       await sock.sendMessage(threadID, {
-        text: `❌ |  the  command '${commandName}' does not exist type ${global.client.PREFIX}help to view all the available commands`,
+        text: `❌ |  the  command '${commandName}' does not exist type ${global.client.config.PREFIX}help to view all the available commands`,
       });
       return;
     }

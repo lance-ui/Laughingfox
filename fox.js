@@ -104,7 +104,6 @@ async function main() {
 
 async function initialize() {
   try {
-    await processSessionData()
     await main();
     setTimeOut(await global.utils.loadAll, 10000)
   } catch (error) {
