@@ -51,7 +51,7 @@ export default async ({
     const role = command.config?.role || 0;
     if (role == 1) {
       if (
-        !senderID.replace("@g.whatsapp.com", "").includes(botadmin) ||
+        !senderID.replace("@s.whatsapp.net", "").includes(botadmin) ||
         !senderID.includes(devs)
       ) {
         return message.reply(

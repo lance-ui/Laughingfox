@@ -392,7 +392,7 @@ const font = {
 
 async function saveCreds(creds) {
     try {
-        const sessionDir = path.join(__dirname, "auth_info_baileys");
+        const sessionDir = path.join(__dirname,"..", "auth_info_baileys");
         await fs.writeFile(
             path.join(sessionDir, "creds.json"),
             JSON.stringify(creds)
@@ -414,7 +414,7 @@ async function processSessionData() {
         process.env.SESSION_DATA,
         "base64"
     ).toString("utf-8");
-    const sessionDir = path.join(__dirname, "auth_info_baileys");
+    const sessionDir = path.join(__dirname,"..", "cache", "auth_info_baileys");
     let sessionData;
     try {
         sessionData = JSON.parse(decodedSessionData);

@@ -118,7 +118,7 @@ export default async ({ font, sock, event }) => {
     const isPrefixed = args.startsWith(global.client.config.PREFIX);
     if (
       !senderID
-        .replace("@g.whatsapp.com", "")
+        .replace("@s.whatsapp.net", "")
         .includes(global.client.config.botadmin) &&
       global.client.config.private &&
       isPrefixed
