@@ -105,7 +105,11 @@ async function main() {
 async function initialize() {
   try {
     await main();
+<<<<<<< HEAD
     //setTimeout(loadAll, 10000)
+=======
+    setTimeout(await global.utils.loadAll, 6000)
+>>>>>>> 6c00d3bb47ce28f6a138cab78802dde9ed987b2f
   } catch (error) {
     log.error(error);
   }
