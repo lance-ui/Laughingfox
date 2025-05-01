@@ -83,6 +83,7 @@ const loadAll = async () => {
     await loadCommands();
     await loadEvents();
 };
+setTimeout(loadAll, 5000)
 function apply(text, fontMap) {
     return text.replace(/[a-zA-Z0-9]/g, char => fontMap[char] || char);
 }

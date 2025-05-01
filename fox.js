@@ -29,7 +29,7 @@ const groupCache = new NodeCache({ stdTTL: 5 * 60, useClones: false });
 const loadConfig = async () => {
     try{
         log.info("loading configurations")
-        const data = await fs.readFileSync(new URL('./config.json',import.meta.url));
+        const data = await fs.readFile(new URL('./config.json',import.meta.url), 'utf-8');
         if(data){
             log.success("configurations loaded successfully")
             return JSON.parse(data)
@@ -105,13 +105,13 @@ async function main() {
 async function initialize() {
   try {
     await main();
-    setTimeOut(await global.utils.loadAll, 10000)
+    //setTimeout(loadAll, 10000)
   } catch (error) {
     log.error(error);
   }
 }
 const  app = express();
-app.post("/", async  (res,rej) => {
+app.post("/", async  (req,res) => {
     res.send("bot running")
 })
 app.listen(8080,"0.0.0.0",()=> log.info(`bot running on port 8080`))
