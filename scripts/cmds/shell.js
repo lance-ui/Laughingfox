@@ -8,7 +8,7 @@ export default {
     category: 'owner',
     role: 1
   },
-  onRun: async (sock, message, message, args) => {
+  onRun: async (sock, message, args) => {
     if (args.length === 0) {
       return await message.reply('Please provide a shell command to execute.');
     }
