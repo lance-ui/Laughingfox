@@ -1,5 +1,9 @@
+
+
 import commandHander from "./commandhandler.js";
-export default async ({ font, sock, event }) => {
+
+
+export default async ({ font, sock, event,log }) => {
   try {
     const threadID = event.key.remoteJid;
     const senderID = event.key.participant;
@@ -35,7 +39,7 @@ export default async ({ font, sock, event }) => {
       unsend: async (data) => {
         await sock.sendMessage(threadID, { delete: data.key });
       },
-      sendGif: async (form, filepath, cap) => {
+      sendGif: async (filepath, cap) => {
         return await sock.sendMessage(threadID, {
           video: {
             url: filepath,
@@ -44,7 +48,7 @@ export default async ({ font, sock, event }) => {
           },
         });
       },
-      sendAudio: async (form, filepath, cap) => {
+      sendAudio: async (filepath, cap) => {
         return await sock.sendMessage(threadID, {
           audio: {
             url: filepath,
@@ -141,7 +145,7 @@ export default async ({ font, sock, event }) => {
       });
       return;
     }
-    await handleCommand({
+    await commandHander({
       sock,
       event,
       threadID,

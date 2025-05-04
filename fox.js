@@ -3,29 +3,24 @@ process.on("uncaughtException", (error) => console.log(error));
 
 import dotenv from "dotenv";
 dotenv.config();
-import pkg, {
+import P from 'pino';
+import {
   makeWASocket,
   useMultiFileAuthState,
   fetchLatestBaileysVersion, 
   Browsers
 } from "@whiskeysockets/baileys";
+import pkg from '@whiskeysockets/baileys'
 import utils from "./utils/utils.js";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 import log from "./utils/log.js";
-import NodeCache from "node-cache"
 import messageHandler from "./handler/messagehandler.js";
 import fs from "fs-extra";
 import express from "express";
 
-const { 
-    syncFullHistory, 
-    markOnlineOnConnect,
-    cachedGroupMetadata, 
-    getMessageFromStore 
-} = pkg;
+const { markOnlineOnConnect } = pkg;
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const groupCache = new NodeCache({ stdTTL: 5 * 60, useClones: false });
 const loadConfig = async () => {
     try{
         log.info("loading configurations")
@@ -52,7 +47,7 @@ global.client = {
 
 global.utils = utils;
 
-const { processSessionData, font, savecreds } = utils;
+const { processSessionData, savecreds, font } = utils;
 
 async function main() {
   log.info("starting bot");
@@ -63,19 +58,17 @@ async function main() {
   const sessionDir = path.join(__dirname, "cache", "auth_info_baileys");
   const { state } = await useMultiFileAuthState(sessionDir);
   const { version } = await fetchLatestBaileysVersion();
-  const sock = await makeWASocket({
+  const sock = makeWASocket({
     version,
     auth: state,
     printQRInTerminal: false,
-    browser: Browsers.macOS("desktop"),
-    syncFullHistory: true,
-    markOnlineOnConnect: false, //set this to true if you want notifications
-    cachedGroupMetadata: async (jid) => groupCache.get(jid),
-    getMessage: async (key) => await getMessageFromStore(key),
+    browser: Browsers.appropriate("chrome"),
+    markOnlineOnConnect: false,
     defaultQueryTimeoutMs: 60000,
     connectTimeoutMs: 60000,
     retryRequestDelayMs: 5000,
     maxRetries: 5,
+    logger: P({ level: 'silent' })
   }); 
   sock.ev.on("connection.update", (update) => {
     const { connection, lastDisconnect } = update;
@@ -96,10 +89,11 @@ async function main() {
     if (type === "notify") {
       console.log(messages);
       for (const event of messages) {
-        await messageHandler({ font, event, sock });
+        await messageHandler({ font, event, sock,log });
       }
     }
   });
+    return sock;
 }
 
 async function initialize() {
@@ -110,8 +104,8 @@ async function initialize() {
   }
 }
 const  app = express();
-app.post("/", async  (req,res) => {
-    res.send("bot running")
-})
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.get('/', (_, res) => res.send(`${config.botName} is running!`));
 app.listen(8080,"0.0.0.0",()=> log.info(`bot running on port 8080`))
 initialize();

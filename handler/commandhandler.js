@@ -1,4 +1,4 @@
-export default async ({
+async function handler({
   args,
   event,
   sock,
@@ -7,26 +7,10 @@ export default async ({
   commandName,
   bot,
   message,
-}) => {
+}) {
   try {
+    const { botadmin, cooldowns} = global.client;
     const command = await global.client.commands.get(commandName.tolowerCase());
-    /**
-     * handle onChat here
-     */
-    for (const [key, value] of Object.entries(global.client.commands)) {
-      if (key.onChat) {
-        await key.onChat({
-          args,
-          event,
-          sock,
-          senderID,
-          threadID,
-          commandName,
-          bot,
-          message,
-        });
-      }
-    }
     /**
      * handle cooldown here
      */
@@ -79,13 +63,10 @@ export default async ({
       args,
       threadID,
       senderID,
-      log,
       font,
       commandName,
       message,
       bot,
-      Users,
-      Threads,
       groupAdmins,
     });
   } catch (e) {
@@ -95,3 +76,5 @@ export default async ({
     throw new Error(e);
   }
 };
+
+export default handler;
