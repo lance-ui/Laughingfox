@@ -107,6 +107,6 @@ async function initialize() {
 const  app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.get('/', (_, res) => res.send(`${config.botName} is running!`));
+app.get('/', (_, res) => res.send(`bot is running!`));
 app.listen(8080,"0.0.0.0",()=> log.info(`bot running on port 8080`))
 initialize();
