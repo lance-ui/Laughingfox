@@ -8,7 +8,8 @@ import {
   makeWASocket,
   useMultiFileAuthState,
   fetchLatestBaileysVersion, 
-  Browsers
+  Browsers,
+  DisconnectReason
 } from "@whiskeysockets/baileys";
 import pkg from '@whiskeysockets/baileys'
 import utils from "./utils/utils.js";

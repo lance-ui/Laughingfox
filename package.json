@@ -17,7 +17,6 @@
   "dependencies": {
     "@whiskeysockets/baileys": "^6.17.16",
     "axios": "^1.9.0",
-    "baileys": "^6.7.16",
     "chalk": "^5.4.1",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
