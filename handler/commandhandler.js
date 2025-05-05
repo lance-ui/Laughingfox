@@ -7,10 +7,11 @@ async function handler({
   commandName,
   bot,
   message,
+  font
 }) {
   try {
-    const { botadmin, cooldowns} = global.client;
-    const command = await global.client.commands.get(commandName.tolowerCase());
+    const { config, cooldowns } = global.client;
+    const command = await global.client.commands.get(commandName.toLowerCase());
     /**
      * handle cooldown here
      */
@@ -35,8 +36,7 @@ async function handler({
     const role = command.config?.role || 0;
     if (role == 1) {
       if (
-        !senderID.replace("@s.whatsapp.net", "").includes(botadmin) ||
-        !senderID.includes(devs)
+        !senderID.replace("@s.whatsapp.net", "").includes(config.admins)
       ) {
         return message.reply(
           "❌ | the command that you are using can only be used by bot admins"
@@ -71,7 +71,7 @@ async function handler({
     });
   } catch (e) {
     message.reply(
-      `❌ | an error occured while executing the command: " ${err.message}`
+      `❌ | an error occured while executing the command: " ${e.message}`
     );
     throw new Error(e);
   }

@@ -11,7 +11,6 @@ import {
   Browsers,
   DisconnectReason
 } from "@whiskeysockets/baileys";
-import pkg from '@whiskeysockets/baileys'
 import utils from "./utils/utils.js";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
@@ -20,7 +19,6 @@ import messageHandler from "./handler/messagehandler.js";
 import fs from "fs-extra";
 import express from "express";
 
-const { markOnlineOnConnect } = pkg;
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const loadConfig = async () => {
     try{
@@ -43,12 +41,12 @@ global.client = {
   events: new Map(),
   buttons: new Map(),
   cooldowns: new Map(),
-  startTime: Date.now()  
+  startTime: Date.now(),
 };
 
 global.utils = utils;
 
-const { processSessionData, savecreds, font } = utils;
+const { processSessionData, saveCreds, font } = utils;
 
 async function main() {
   log.info("starting bot");
@@ -64,7 +62,7 @@ async function main() {
     auth: state,
     printQRInTerminal: false,
     browser: Browsers.appropriate("chrome"),
-    markOnlineOnConnect: false,
+    markOnlineOnConnect: true,
     defaultQueryTimeoutMs: 60000,
     connectTimeoutMs: 60000,
     retryRequestDelayMs: 5000,
@@ -76,7 +74,7 @@ async function main() {
     if (connection === "close") {
       const shouldReconnect =
         lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut;
-      log.info("Connection closed reconnecting:", shouldReconnect);
+      log.error(`Connection closed reconnecting: ${shouldReconnect}`);
       if (shouldReconnect) {
         main();
       }
@@ -85,7 +83,7 @@ async function main() {
     }
   });
 
-  sock.ev.on("creds.update", savecreds);
+  sock.ev.on("creds.update", saveCreds);
   sock.ev.on("messages.upsert", async ({ messages, type }) => {
     if (type === "notify") {
       console.log(messages);
@@ -97,13 +95,38 @@ async function main() {
     return sock;
 }
 
+async function watchFiles(){
+    try{
+        if(global.client.config.autoload){
+        fs.watch("./config.json", async () => {
+        log.info("detected change to config file reloading configurations")
+        global.client.config = await loadConfig()
+        })
+        }
+        const commandPath = path.join(__dirname, "scripts", "cmds")
+        const eventPath = path.join(__dirname, "scripts", "events")
+        fs.watch(commandPath,async () => {
+            log.info("detected change in command path reloading commands")
+            await global.utils.loadCommands()
+        })
+        fs.watch(eventPath, async () => {
+            log.info("detected change to event path reloading events")
+            await global.utils.loadEvents()
+        })
+    }catch(error){
+        throw new Error(error.message)
+    }
+}
+
 async function initialize() {
   try {
     await main();
+    await watchFiles()
   } catch (error) {
     log.error(error);
   }
 }
+
 const  app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

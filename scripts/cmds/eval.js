@@ -5,6 +5,7 @@ export default {
     role: 1,
     description: "",
     category: "ADMIN",
+    usage: ""
   },
   onRun: async ({ sock, args, message, bot, senderID, threadID, font }) => {
     function output(msg) {

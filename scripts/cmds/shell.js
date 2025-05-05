@@ -1,33 +1,50 @@
-import { execSync } from 'child_process';
+import { spawn } from "child_process";
 
 export default {
-  config: {
-    name: 'shell',
-    description: 'Execute shell commands.',
-    usage: '!shell <command>',
-    category: 'owner',
-    role: 1
-  },
-  onRun: async (sock, message, args) => {
-    if (args.length === 0) {
-      return await message.reply('Please provide a shell command to execute.');
+    config: {
+        name: "shell",
+        description: "bash shell",
+        role: 1,
+        cooldown: 5
+    },
+
+    onRun: async function ({ message, args, font }) {
+        const input = args.join(" ");
+        if (!input) {
+            return message.send("You can not execute an empty command");
+        }
+        const runner = spawn(input, { shell: true });
+
+        runner.stdout.on("data", data => {
+            message.send(
+                `👨‍💻 » | ${font.bold(
+                    "Console"
+                )}\n_____________________\n${data.toString()}`
+            );
+        });
+
+        runner.stderr.on("data", data => {
+            message.send(
+                `👨‍💻» | ${font.bold(
+                    "Error"
+                )}\n________________________\n${data.toString()}`
+            );
+        });
+
+        runner.on("error", error => {
+            message.send(
+                `👨‍💻» | ${font.bold("Error")}\n________________________\n${error.message}`
+            );
+        });
+
+        runner.on("close", code => {
+            if (code !== 0) {
+                message.send(
+                    `👨‍💻» | ${font.bold(
+                        "Exit Code"
+                    )}\n________________________\nCommand exited with code ${code}`
+                );
+            }
+        });
     }
-
-    const cmd = args.join(' ');
-    await message.reply(`Executing command: ${cmd}...`);
-
-    try {
-      const result = execSync(cmd, { encoding: 'utf-8' });
-
-      if (!result) {
-        await message.reply('Command executed successfully with no output.');
-      } else if (result.length > 10000) {
-        await message.reply('Output too large. Executed command successfully.');
-      } else {
-        await message.reply(`${result}`);
-      }
-    } catch (error) {
-      await message.reply(`Error executing command: ${error.message}`);
-    }
-  }
 };
