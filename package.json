@@ -23,7 +23,9 @@
     "express": "^5.1.0",
     "fs-extra": "^11.3.0",
     "node-cache": "^5.1.2",
+    "os": "^0.1.2",
     "pastebin-api": "^7.0.0",
-    "pino": "^9.6.0"
+    "pino": "^9.6.0",
+    "systeminformation": "^5.25.11"
   }
 }

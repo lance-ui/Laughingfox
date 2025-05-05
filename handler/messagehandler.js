@@ -116,8 +116,6 @@ export default async ({ font, sock, event,log }) => {
       args = event.videoMessage.caption || "";
     } else if (event.message.extendedTextMessage) {
       args = event.message.extendedTextMessage.text;
-    } else if (event.message.extendedTextMessage.contextInfo) {
-      return;
     }
     const isPrefixed = args.startsWith(global.client.config.PREFIX);
     if (
@@ -130,7 +128,7 @@ export default async ({ font, sock, event,log }) => {
       return message.send(`❌  | currently only the bot admin can use the bot`);
     }
     if (args.toLowerCase() == "prefix") {
-      message.reply(`✅ PREFIX:${global.client.config.PREFIX}`);
+      message.reply(`✅ PREFIX: ${global.client.config.PREFIX}`);
       return;
     }
     if (!isPrefixed) return;
