@@ -20,7 +20,7 @@ export default {
                     event
                 );
             }
-            const media = await event.downloadMedia(quotedMessage);
+            const media = await bot.downloadMedia(quotedMessage);
             console.log("media", media);
             if (!media) {
                 return message.reply("reply to image only");
