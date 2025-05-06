@@ -8,11 +8,10 @@ export default async ({ font, sock, event,log,proto }) => {
     const threadID = event.key.remoteJid;
     const senderID = event.key.participant;
     const message = {
-      send: async (form, form2) => {
+      send: async (form) => {
         return await sock.sendMessage(
           threadID,
-          { text: form },
-          { quoted: form2 || "" }
+          { text: form }
         );
       },
       reply: async (form) => {
