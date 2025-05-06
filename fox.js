@@ -4,7 +4,7 @@ process.on("uncaughtException", (error) => console.log(error));
 import dotenv from "dotenv";
 dotenv.config();
 import P from 'pino';
-import {
+import pkg,{
   makeWASocket,
   useMultiFileAuthState,
   fetchLatestBaileysVersion, 
@@ -35,6 +35,7 @@ const loadConfig = async () => {
     }
 }
 
+const { proto } = pkg;
 global.client = {
   config: await loadConfig(),
   commands: new Map(),
@@ -88,7 +89,7 @@ async function main() {
     if (type === "notify") {
       console.log(messages);
       for (const event of messages) {
-        await messageHandler({ font, event, sock,log });
+        await messageHandler({ font, event, sock,log,proto });
       }
     }
   });
@@ -99,7 +100,6 @@ async function watchFiles(){
     try{
         if(global.client.config.autoload){
         fs.watch("./config.json", async () => {
-        global.client.config.clear()
         log.info("detected change to config file reloading configurations")
         global.client.config = await loadConfig()
         })
@@ -107,12 +107,10 @@ async function watchFiles(){
         const commandPath = path.join(__dirname, "scripts", "cmds")
         const eventPath = path.join(__dirname, "scripts", "events")
         fs.watch(commandPath,async () => {
-            global.client.commands.clear()
             log.info("detected change in command path reloading commands")
             await global.utils.loadCommands()
         })
         fs.watch(eventPath, async () => {
-            global.client.events.clear()
             log.info("detected change to event path reloading events")
             await global.utils.loadEvents()
         })

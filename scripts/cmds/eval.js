@@ -7,7 +7,7 @@ export default {
     category: "ADMIN",
     usage: ""
   },
-  onRun: async ({ sock, args, message, bot, senderID, threadID, font }) => {
+  onRun: async ({ sock, args, message, bot, senderID, threadID, font,proto }) => {
     function output(msg) {
       if (
         typeof msg == "number" ||

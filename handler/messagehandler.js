@@ -3,7 +3,7 @@
 import commandHander from "./commandhandler.js";
 
 
-export default async ({ font, sock, event,log }) => {
+export default async ({ font, sock, event,log,proto }) => {
   try {
     const threadID = event.key.remoteJid;
     const senderID = event.key.participant;
@@ -154,6 +154,7 @@ export default async ({ font, sock, event,log }) => {
       font,
       message,
       bot,
+      proto
     });
   } catch (e) {
     console.log(e);

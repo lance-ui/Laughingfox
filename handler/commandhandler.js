@@ -7,7 +7,8 @@ async function handler({
   commandName,
   bot,
   message,
-  font
+  font,
+  proto
 }) {
   try {
     const { config, cooldowns } = global.client;
@@ -68,10 +69,11 @@ async function handler({
       message,
       bot,
       groupAdmins,
+      proto
     });
   } catch (e) {
     message.reply(
-      `❌ | an error occured while executing the command: " ${e.message}`
+      `❌ | an error occured while executing the command: ${e.message}`
     );
     throw new Error(e);
   }
