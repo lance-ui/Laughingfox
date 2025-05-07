@@ -28,6 +28,9 @@ async function loadCommands() {
                 } else if (!command.config) {
                     throw new Error(`Error: ${file} does not export config!`);
                 } else {
+                    if(command.config.name.includes(global.client.config.unloadedCmds)){
+      continue 
+}
                     global.client.commands.set(command.config.name, command);
                     if (command.config?.aliase) {
                         global.client.commands.set(
