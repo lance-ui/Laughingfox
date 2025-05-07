@@ -23,7 +23,7 @@ export default {
         try {
             const __dirname = dirname(fileURLToPath(import.meta.url));
             if (args.length < 2) {
-                return message.send("Invalid usage!");
+                return message.reply("Invalid usage!");
             }
             const action = args[0].toLowerCase();
             const commandName = args[1];
@@ -34,7 +34,9 @@ export default {
                 case "-i":
                     let code = null;
                     if (!args[2]) {
-                        return message.send("Please provide the command code!");
+                        return message.reply(
+                            "Please provide the command code!"
+                        );
                     } else if (
                         args[2].toLowerCase().startsWith("https") ||
                         args[2].toLowerCase().startsWith("http")
@@ -43,7 +45,7 @@ export default {
                             const response = await axios.get(args[2]);
                             code = response.data;
                         } catch (e) {
-                            return message.send(
+                            return message.reply(
                                 "An error occurred: " + e.message
                             );
                         }
@@ -56,11 +58,11 @@ export default {
                         if (fs.existsSync(commandPath)) {
                             const command = commandModule.default;
                             if (!command.config) {
-                                message.send(
+                                message.reply(
                                     `${commandName} does not export config`
                                 );
                             } else if (!command.onRun) {
-                                message.send(
+                                message.reply(
                                     `${commandName} does not export the function onRun`
                                 );
                             } else {
@@ -68,14 +70,14 @@ export default {
                                     command.config.name,
                                     command
                                 );
-                                message.send(
+                                message.reply(
                                     `Command ${commandName} installed successfully!`
                                 );
                             }
                         }
                     } catch (e) {
                         console.error("Error loading command:", e);
-                        return message.send(
+                        return message.reply(
                             `Error loading command: ${e.message}`
                         );
                     }
@@ -90,18 +92,46 @@ export default {
                                 unloadCommandPath
                             );
                             const command = commandModule.default;
+                            global.client.config.unloadedCmds.push(
+                                command.config.name
+                            );
                             global.client.commands.delete(command.config.name);
-                            message.send(
+                            message.reply(
                                 `Command ${commandName} unloaded successfully!`
                             );
+                            if (
+                                !command.config.name.includes(
+                                    global.client.config.unloadedCmds
+                                )
+                            ) {
+                                fs.writeFileSync(
+                                    new URL(
+                                        "./../../config.json",
+                                        import.meta.url
+                                    ),
+                                    JSON.stringify(global.client.config),
+                                    "utf8",
+                                    err => {
+                                        if (err) {
+                                            message.reply(
+                                                "failed to write data to config file"
+                                            );
+                                        } else {
+                                            message.reply(
+                                                "data has been written to config file successfully"
+                                            );
+                                        }
+                                    }
+                                );
+                            }
                         } catch (e) {
                             console.error("Error unloading command:", e);
-                            return message.send(
+                            return message.reply(
                                 `Error unloading command: ${e.message}`
                             );
                         }
                     } else {
-                        message.send(`Command ${commandName} does not exist!`);
+                        message.reply(`Command ${commandName} does not exist!`);
                     }
                     break;
                 case "delete":
@@ -112,11 +142,11 @@ export default {
                         global.client.commands.delete(
                             commandName.replace(".js", "")
                         );
-                        message.send(
+                        message.reply(
                             `Command ${commandName} deleted successfully!`
                         );
                     } else {
-                        message.send(`Command ${commandName} not found!`);
+                        message.reply(`Command ${commandName} not found!`);
                     }
                     break;
                 case "load":
@@ -130,17 +160,45 @@ export default {
                                 command.config.name,
                                 command
                             );
-                            message.send(
+                            message.reply(
                                 `Command ${commandName} loaded successfully!`
                             );
+                            if (
+                                command.config.name.includes(
+                                    global.clint.config.unloadedCmds
+                                )
+                            ) {
+                                global.client.config.unloadedCmds.pop(
+                                    indexOf(command.config.name)
+                                );
+                                fs.writeFileSync(
+                                    new URL(
+                                        "./../../config.json",
+                                        import.meta.url
+                                    ),
+                                    JSON.stringify(global.client.config),
+                                    "utf8",
+                                    err => {
+                                        if (err) {
+                                            message.reply(
+                                                "failed to write data to config file"
+                                            );
+                                        } else {
+                                            message.reply(
+                                                "data has been written to config file successfully"
+                                            );
+                                        }
+                                    }
+                                );
+                            }
                         } catch (e) {
                             console.error("Error loading command:", e);
-                            return message.send(
+                            return message.reply(
                                 `Error loading command: ${e.message}`
                             );
                         }
                     } else {
-                        message.send(`Command ${commandName} not found!`);
+                        message.reply(`Command ${commandName} not found!`);
                     }
                     break;
                 case "bin":
@@ -148,7 +206,7 @@ export default {
                     const binFileName = args[1];
                     const binFilePath = path.join(cmdsPath, binFileName);
                     if (!fs.existsSync(binFilePath)) {
-                        await message.send(
+                        await message.reply(
                             `❌ | The file ${binFileName} does not exist.`
                         );
                         return;
@@ -163,19 +221,19 @@ export default {
                             publicity: 1
                         });
                         if (!url) {
-                            await message.send(
+                            await message.reply(
                                 `❌ | Failed to upload the file to pastebin, please check if the API key is working.`
                             );
                             return;
                         }
                         const id = url.split("/")[3];
                         const rawPaste = "https://pastebin.com/raw/" + id;
-                        await message.send(
+                        await message.reply(
                             `✅ | Successfully uploaded ${binFileName} to pastebin!\nUrl: ${rawPaste}`
                         );
                     } catch (e) {
                         console.error("Pastebin error:", e);
-                        return message.send(
+                        return message.reply(
                             `❌ | Failed to upload to pastebin: ${e.message}`
                         );
                     }
@@ -185,19 +243,19 @@ export default {
                     const fileFileName = args[1];
                     const fileFilePath = path.join(cmdsPath, fileFileName);
                     if (!fs.existsSync(fileFilePath)) {
-                        return message.send(
+                        return message.reply(
                             `the file ${fileFileName} does not exist`
                         );
                     }
                     const fileData = fs.readFileSync(fileFilePath, "utf-8");
-                    message.send(fileData);
+                    message.reply(fileData);
                     break;
                 default:
-                    message.send("unknown action specifield");
+                    message.reply("unknown action specifield");
             }
         } catch (error) {
             console.error("Error managing command:", error);
-            message.send(`Failed to manage command! ${error.message}`);
+            message.reply(`Failed to manage command! ${error.message}`);
         }
     }
 };
