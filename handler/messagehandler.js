@@ -120,7 +120,7 @@ export default async ({ font, sock, event,log,proto }) => {
     if (
       !senderID
         .replace("@s.whatsapp.net", "")
-        .includes(global.client.config.botadmin) &&
+        .includes(global.client.config.admins) &&
       global.client.config.private &&
       isPrefixed
     ) {

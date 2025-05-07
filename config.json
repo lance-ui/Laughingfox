@@ -1,9 +1,1 @@
-{
-  "private": false,
-  "admins": ["260767876189"],
-  "PREFIX": "-",
-  "autoload": true,
-  "keys": {
-      "pastebin": "R02n6-lNPJqKQCd5VtL4bKPjuK6ARhHb"
-  }
-}
+{"private":"true","admins":["260767876189"],"PREFIX":"-","autoload":true,"keys":{"pastebin":"R02n6-lNPJqKQCd5VtL4bKPjuK6ARhHb"},"unloadedCmds":["credits to lance"]}

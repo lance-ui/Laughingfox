@@ -11,65 +11,42 @@ export default {
   },
   onRun: async ({ sock, event, threadID, args }) => {
     const start = Date.now();
-    const msg = await sock.sendMessage(
-      threadID,
-      { text: `𝐍𝐨𝐰 𝐥𝐨𝐚𝐝𝐢𝐧𝐠. . .\n█▒▒▒▒▒▒▒` }
-    );
-
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    await sock.sendMessage(threadID, {
-      text: "████▒▒▒▒▒",
-      edit: msg.key,
+    const msg = await sock.sendMessage(threadID, {
+      text: `Loading...`,
     });
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    await sock.sendMessage(threadID, {
-      text: `⋘ 𝑙𝑜𝑎𝑑𝑖𝑛𝑔 𝑑𝑎𝑡𝑎... ⋙\n██████▒▒▒`,
-      edit: msg.key,
-    });
-
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    await sock.sendMessage(threadID, {
-      text: `⋘ 𝑃𝑙𝑒𝑎𝑠𝑒 𝑤𝑎𝑖𝑡... ⋙\n█████████`,
-      edit: msg.key,
-    });
-
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    const latency = Date.now() - start;
     const sysInfo = await si.system();
     const cpuInfo = await si.cpu();
     const memInfo = await si.mem();
     const nodeInfo = process.versions.node;
     const v8Info = process.versions.v8;
+    const latency = Date.now() - start;
 
-    const report = ` ╭━━━〔 Bot Status 〕━━━╮
-│
-│ • 🧶Latency: ${latency}ms
-│ • 🕚Uptime: ${formatUptime(process.uptime() * 1000)}
-│ • 📡CPU Cores: ${os.cpus().length}
-│ • 🖥️CPU Model: ${cpuInfo.model}
-│ • 💡CPU Speed: ${cpuInfo.speed} GHz
-│ ╰━━━〔 Bot Status 〕━━━╯
-╭━━━〔 Memory Usage 〕━━━╮
-│
-│ • 🔋Total: ${formatBytes(memInfo.total)}
-│ • 🪫Used: ${formatBytes(memInfo.active)}
-│ • 🖲️Free: ${formatBytes(memInfo.free)}
-│ ╰━━━〔 Memory Usage 〕━━━╯
-╭━━━〔 System Info 〕━━━╮
-│
-│ • 💻Platform: ${os.platform()} (${os.arch()})
-│ • 📱Hostname: ${os.hostname()}
-│ • ⚙️Node.js: ${nodeInfo}
-│ • 🛠️V8 Engine: ${v8Info}
-│ • 📊OS: ${getOSInfo()}
-│ ╰━━━〔 System Info 〕━━━╯
-╭━━━〔 Bot Information 〕━━━╮
-│
-│ • 👭Users: not yet
-│ • 👭Threads: not yet
-│ • 👤Contact Admin: not yet
-│ ╰━━━〔 Bot Information 〕━━━╯ `;
+    const report = `
+*Bot Status
+• Latency: ${latency}ms
+• Uptime: ${formatUptime(process.uptime() * 1000)}
+• CPU Cores: ${os.cpus().length}
+• CPU Model: ${cpuInfo.model}
+• CPU Speed: ${cpuInfo.speed} GHz
+
+*Memory Usage
+• Total: ${formatBytes(memInfo.total)}
+• Used: ${formatBytes(memInfo.active)}
+• Free: ${formatBytes(memInfo.free)}
+
+*System Info
+• Platform: ${os.platform()} (${os.arch()})
+• Hostname: ${os.hostname()}
+• Node.js: ${nodeInfo}
+• V8 Engine: ${v8Info}
+• OS: ${getOSInfo()}
+
+*Bot Information
+• Users: not yet
+• Threads: not yet
+• Contact Admin: not yet
+`;
 
     await sock.sendMessage(threadID, {
       text: report,
