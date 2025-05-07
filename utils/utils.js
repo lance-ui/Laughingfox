@@ -19,6 +19,9 @@ async function loadCommands() {
 
         for (const file of commandFiles) {
             try {
+                if(file.includes(global.client.config.unloadedCmds)){
+                  continue
+                }
                 const commandModule = await import(
                     path.join(commandsPath, file)
                 );
