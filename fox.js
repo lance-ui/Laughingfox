@@ -47,15 +47,12 @@ global.client = {
 
 global.utils = utils;
 
-const { processSessionData, saveCreds, font } = utils;
+const { saveCreds, font } = utils;
 
 async function main() {
   log.info("starting bot");
-  const sessionData = await processSessionData();
-  if (!sessionData) {
-    throw new Error("session data not found");
-  }
-  const sessionDir = path.join(__dirname, "cache", "auth_info_baileys");
+  const sessionDir = path.join(__dirname, "utils", "cache", "auth_info_baileys");
+  fs.ensureDir(sessionDir)
   const { state } = await useMultiFileAuthState(sessionDir);
   const { version } = await fetchLatestBaileysVersion();
   const sock = makeWASocket({
@@ -98,34 +95,31 @@ async function main() {
 /**
 *handle autoload here
 */
-async function watchFiles(){
-    try{
-        if(global.client.config.autoload){
-          
-        fs.watch("./config.json", async () => {
-        log.info("detected change to config file reloading configurations")
-        global.client.config= {}
-        global.client.config = await loadConfig()
-        })
-        }
-        const commandPath = path.join(__dirname, "scripts", "cmds")
-        const eventPath = path.join(__dirname, "scripts", "events")
-      
-        fs.watch(commandPath,async () => {
-            global.client.commands.clear()
-            log.info("detected change in command path reloading commands")
-            await global.utils.loadCommands()
-        });
-      
-        fs.watch(eventPath, async () => {
-            global.client.events.clear()
-            log.info("detected change to event path reloading events")
-            await global.utils.loadEvents()
-        });
-      
-    }catch(error){
-        throw new Error(error.message)
+async function watchFiles() {
+  try {
+    if (global.client.config.autoload) {
+      fs.watch("./config.json", async () => {
+        log.info("Config file changed, reloading...");
+        global.client.config = {}
+        global.client.config = await loadConfig();
+      });
     }
+
+    const watchPaths = [
+      { dir: path.join(__dirname, "scripts", "cmds"), handler: global.utils.loadCommands, collection: global.client.commands },
+      { path: path.join(__dirname, "scripts", "events"), handler: global.utils.loadEvents, collection: global.client.events },
+    ];
+
+    watchPaths.forEach(({ dir, handler, collection }) => {
+      fs.watch(dir, async () => {
+        log.info(`Change detected in ${dir}, reloading...`);
+        collection.clear();
+        await handler();
+      });
+    });
+  } catch (error) {
+    throw new Error(error.message);
+  }
 }
 
 async function initialize() {
