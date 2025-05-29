@@ -29,9 +29,13 @@ async function loadCommands() {
                 } else if (!command.config) {
                     throw new Error(`Error: ${file} does not export config!`);
                 } else {
-                    if(command.config.name.includes(global.client.config.unloadedCmds)){
-      continue 
-}
+                    if (
+                        command.config.name.includes(
+                            global.client.config.unloadedCmds
+                        )
+                    ) {
+                        continue;
+                    }
                     global.client.commands.set(command.config.name, command);
                     if (command.config?.aliase) {
                         global.client.commands.set(
@@ -87,11 +91,16 @@ const loadAll = async () => {
     await loadCommands();
     await loadEvents();
 };
-setTimeout(loadAll, 5000)
+setTimeout(loadAll, 5000);
 
 async function saveCreds(creds) {
     try {
-        const sessionDir = path.join(__dirname,"..", "cache", "auth_info_baileys");
+        const sessionDir = path.join(
+            __dirname,
+            "..",
+            "cache",
+            "auth_info_baileys"
+        );
         await fs.writeFile(
             path.join(sessionDir, "creds.json"),
             JSON.stringify(creds)
@@ -107,7 +116,6 @@ const utils = {
     loadCommands,
     loadEvents,
     font,
-    saveCreds,
-    processSessionData
+    saveCreds
 };
 export default utils;
