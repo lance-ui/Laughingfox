@@ -54,11 +54,7 @@ const { saveCreds, font } = utils;
 
 async function main() {
     log.info("starting bot");
-    const sessionDir = path.join(
-        __dirname,
-        "cache",
-        "auth_info_baileys"
-    );
+    const sessionDir = path.join(__dirname, "cache", "auth_info_baileys");
     fs.ensureDir(sessionDir);
     const { state } = await useMultiFileAuthState(sessionDir);
     const { version } = await fetchLatestBaileysVersion();
@@ -146,7 +142,6 @@ async function initialize() {
         log.error(error);
     }
 }
-
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
