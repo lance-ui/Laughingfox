@@ -1,5 +1,9 @@
-process.on("unhandledRejection", error => console.error("Unhandled Rejection:", error));
-process.on("uncaughtException", error => console.error("Uncaught Exception:", error));
+process.on("unhandledRejection", error =>
+    console.error("Unhandled Rejection:", error)
+);
+process.on("uncaughtException", error =>
+    console.error("Uncaught Exception:", error)
+);
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -24,7 +28,10 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const loadConfig = async () => {
     try {
         log.info("Loading configurations...");
-        const data = await fs.readFile(new URL("./config.json", import.meta.url), "utf-8");
+        const data = await fs.readFile(
+            new URL("./config.json", import.meta.url),
+            "utf-8"
+        );
         if (!data) throw new Error("Config data not found");
         log.success("Configurations loaded successfully");
         return JSON.parse(data);
@@ -53,7 +60,7 @@ async function main() {
     await fs.ensureDir(sessionDir);
     const { state } = await useMultiFileAuthState(sessionDir);
     const { version } = await fetchLatestBaileysVersion();
-    
+
     const sock = makeWASocket({
         version,
         auth: state,
@@ -67,23 +74,33 @@ async function main() {
         logger: P({ level: "silent" })
     });
 
+    sock.ev.on("creds.update", saveCreds);
+
     sock.ev.on("connection.update", async update => {
         const { connection, lastDisconnect, qr } = update;
-        if(connection === "connecting" || !!qr){
-          const phoneNumber = global.client.config || "";
-          if(!phoneNumber){
-            throw new Error("phone Number in config not found make sure to add it at number")
-          }
-          const code = await sock.requestPairingCode(phoneNumber)
-          console.log(code)
-        }else if (connection === 'close' && (lastDisconnect?.error as Boom)?.output?.statusCode === DisconnectReason.restartRequired) {
-          main()
-        }else if (connection === "open") {
+
+        if (connection === "connecting") {
+            const phoneNumber = global.client.config?.phoneNumber;
+            if (!phoneNumber) {
+                log.error("Phone number not found in config");
+                return;
+            }
+            try {
+                const code = await sock.requestPairingCode(phoneNumber);
+                console.log(code);
+            } catch (error) {
+                log.error("Error requesting pairing code:", error);
+            }
+        } else if (
+            connection === "close" &&
+            lastDisconnect?.error?.output?.statusCode ===
+                DisconnectReason.restartRequired
+        ) {
+            setTimeout(main, 10000);
+        } else if (connection === "open") {
             log.success("Connected to WhatsApp");
         }
     });
-
-    sock.ev.on("creds.update", saveCreds);
 
     sock.ev.on("messages.upsert", async ({ messages, type }) => {
         if (type === "notify") {
