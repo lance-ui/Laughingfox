@@ -70,6 +70,12 @@ async function main() {
         maxRetries: 5,
         logger: P({ level: "silent" })
     });
+    if (!sock.authState.creds.registered) {
+        const number = global.client.config.number;
+        const code = await sock.requestPairingCode(number);
+        log.info("Bot is not logged into a whatsapp account trying to log in using available number please enter the following code in your whatsapp then it will log in")
+        console.log(code);
+    }
     sock.ev.on("connection.update", update => {
         const { connection, lastDisconnect } = update;
         if (connection === "close") {
