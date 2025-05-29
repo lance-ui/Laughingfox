@@ -69,12 +69,12 @@ async function main() {
 
     sock.ev.on("connection.update", update => {
         const { connection, lastDisconnect, qr } = update;
-        if(connection === "connecting"){
+        if(connection === "connecting" || !!qr){
           const phoneNumber = global.client.config || "";
           if(!phoneNumber){
             throw new Error("phone Number in config not found make sure to add it at number")
           }
-          const code sock.requestPairingCode(phoneNumber)
+          const code = await sock.requestPairingCode(phoneNumber)
           console.log(code)
         }else if (connection === "close") {
             const shouldReconnect = lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut;
