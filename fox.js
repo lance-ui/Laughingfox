@@ -76,13 +76,9 @@ async function main() {
           }
           const code = await sock.requestPairingCode(phoneNumber)
           console.log(code)
-        }else if (connection === "close") {
-            const shouldReconnect = lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut;
-            log.error(`Connection closed. Reconnecting: ${shouldReconnect}`);
-            if (shouldReconnect) {
-                main();
-            }
-        } else if (connection === "open") {
+        }else if (connection === 'close' && (lastDisconnect?.error as Boom)?.output?.statusCode === DisconnectReason.restartRequired) {
+    main()
+  }else if (connection === "open") {
             log.success("Connected to WhatsApp");
         }
     });
