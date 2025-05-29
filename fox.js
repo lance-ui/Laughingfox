@@ -67,16 +67,16 @@ async function main() {
         logger: P({ level: "silent" })
     });
 
-    if (!sock.authState.creds.registered) {
-        const number = global.client.config.number;
-        const code = await sock.requestPairingCode(number);
-        log.info("Bot is not logged into a WhatsApp account. Please enter the following code in your WhatsApp to log in:");
-        console.log(code);
-    }
-
     sock.ev.on("connection.update", update => {
-        const { connection, lastDisconnect } = update;
-        if (connection === "close") {
+        const { connection, lastDisconnect, qr } = update;
+        if(connection === "connecting"){
+          const phoneNumber = global.client.config || "";
+          if(!phoneNumber){
+            throw new Error("phone Number in config not found make sure to add it at number")
+          }
+          const code sock.requestPairingCode(phoneNumber)
+          console.log(code)
+        }else if (connection === "close") {
             const shouldReconnect = lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut;
             log.error(`Connection closed. Reconnecting: ${shouldReconnect}`);
             if (shouldReconnect) {
