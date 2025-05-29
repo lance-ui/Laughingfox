@@ -22,6 +22,7 @@ import log from "./utils/log.js";
 import messageHandler from "./handler/messagehandler.js";
 import fs from "fs-extra";
 import express from "express";
+import qr from "qr-image";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -64,7 +65,7 @@ async function main() {
     const sock = makeWASocket({
         version,
         auth: state,
-        printQRInTerminal: false,
+        printQRInTerminal: global.client.config.useQr,
         browser: Browsers.appropriate("chrome"),
         markOnlineOnConnect: true,
         defaultQueryTimeoutMs: 60000,
@@ -78,8 +79,11 @@ async function main() {
 
     sock.ev.on("connection.update", async update => {
         const { connection, lastDisconnect, qr } = update;
-
-        if (connection === "connecting") {
+        let Qrdata;
+        if (global.client.config.useQr) {
+            Qrdata = qr;
+        }
+        if (connection === "connecting" && !global.client.config.useQr) {
             const phoneNumber = global.client.config?.number;
             if (!phoneNumber) {
                 log.error("Phone number not found in config");
@@ -87,6 +91,7 @@ async function main() {
             }
             try {
                 const code = await sock.requestPairingCode(phoneNumber);
+                console.log("please enter the following code in your WhatsApp");
                 console.log(code);
             } catch (error) {
                 log.error("Error requesting pairing code: \n" + error.message);
@@ -159,9 +164,41 @@ async function initialize() {
 }
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.get("/", (_, res) => res.send("Bot is running!"));
+app.use(express.static(path.join(__dirname, "utils", "public")));
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "utils", "public", "index.html"));
+});
+app.get("/data", (req, res) => {
+    if (qrCode == null) return;
+    res.json({ data: qrCode });
+});
+app.get("/qr", (req, res) => {
+    if (qrCode == null) return;
+    if (qrCode == "skip_process") {
+        res.status(200).json({ data: "already_authorized" });
+    }
+    const filename = `img_qr.jpg`;
+    const filePath = path.join(
+        dirname(fileURLToPath(import.meta.url)),
+        "utils",
+        "public",
+        filename
+    );
+    fs.ensureDirSync(path.dirname(filePath));
+
+    const qr_svg = qr.image(qrCode, { type: "jpg", size: 10 });
+    qr_svg.pipe(fs.createWriteStream(filePath));
+
+    qr_svg.on("end", () => {
+        log.info(`QR code saved to ${filename}`);
+        res.status(200).json({ qr: filename });
+    });
+
+    qr_svg.on("error", err => {
+        log.error(err);
+        res.status(500).json({ error: err.message });
+    });
+});
 app.listen(8080, "0.0.0.0", () => log.info("Bot running on port 8080"));
 
 initialize();
