@@ -3,6 +3,7 @@
     "number": "260767876189",
     "admins": ["260767876189"],
     "PREFIX": "-",
+    "useQr": true,
     "autoload": true,
     "keys": { "pastebin": "R02n6-lNPJqKQCd5VtL4bKPjuK6ARhHb" },
     "unloadedCmds": ["credits to lance"]
