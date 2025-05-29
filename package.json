@@ -1,32 +1,32 @@
 {
-  "name": "laughing-fox",
-  "type": "module",
-  "version": "1.0.0",
-  "main": "index.js",
-  "engines": {
-    "node": ">=22.0.0"
-  },
-  "scripts": {
-    "start": "node index.js",
-    "setup": "npm install"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "dependencies": {
-    "@whiskeysockets/baileys": "^6.17.16",
-     "qr-image": "^3.2.0",
-    "axios": "^1.9.0",
-    "baileys": "^6.7.16",
-    "chalk": "^5.4.1",
-    "dotenv": "^16.5.0",
-    "express": "^5.1.0",
-    "fs-extra": "^11.3.0",
-    "node-cache": "^5.1.2",
-    "os": "^0.1.2",
-    "pastebin-api": "^7.0.0",
-    "pino": "^9.6.0",
-    "systeminformation": "^5.25.11"
-  }
+    "name": "laughing-fox",
+    "type": "module",
+    "version": "1.0.0",
+    "main": "index.js",
+    "engines": {
+        "node": ">=17.0.0"
+    },
+    "scripts": {
+        "start": "node index.js",
+        "setup": "npm install"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "description": "",
+    "dependencies": {
+        "@whiskeysockets/baileys": "^6.17.16",
+        "qr-image": "^3.2.0",
+        "axios": "^1.9.0",
+        "baileys": "^6.7.16",
+        "chalk": "^5.4.1",
+        "dotenv": "^16.5.0",
+        "express": "^5.1.0",
+        "fs-extra": "^11.3.0",
+        "node-cache": "^5.1.2",
+        "os": "^0.1.2",
+        "pastebin-api": "^7.0.0",
+        "pino": "^9.6.0",
+        "systeminformation": "^5.25.11"
+    }
 }
