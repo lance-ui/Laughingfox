@@ -89,7 +89,7 @@ async function main() {
                 const code = await sock.requestPairingCode(phoneNumber);
                 console.log(code);
             } catch (error) {
-                log.error("Error requesting pairing code:", error);
+                log.error("Error requesting pairing code: \n" + error);
             }
         } else if (
             connection === "close" &&
