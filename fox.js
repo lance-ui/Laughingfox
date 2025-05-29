@@ -80,7 +80,7 @@ async function main() {
         const { connection, lastDisconnect, qr } = update;
 
         if (connection === "connecting") {
-            const phoneNumber = global.client.config?.phoneNumber;
+            const phoneNumber = global.client.config?.number;
             if (!phoneNumber) {
                 log.error("Phone number not found in config");
                 return;
