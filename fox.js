@@ -77,8 +77,8 @@ async function main() {
           const code = await sock.requestPairingCode(phoneNumber)
           console.log(code)
         }else if (connection === 'close' && (lastDisconnect?.error as Boom)?.output?.statusCode === DisconnectReason.restartRequired) {
-    main()
-  }else if (connection === "open") {
+          main()
+        }else if (connection === "open") {
             log.success("Connected to WhatsApp");
         }
     });
