@@ -67,7 +67,7 @@ async function main() {
         logger: P({ level: "silent" })
     });
 
-    sock.ev.on("connection.update", update => {
+    sock.ev.on("connection.update", async update => {
         const { connection, lastDisconnect, qr } = update;
         if(connection === "connecting" || !!qr){
           const phoneNumber = global.client.config || "";
