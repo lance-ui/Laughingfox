@@ -2,7 +2,7 @@ import chalk from "chalk";
 
 const log = {
     info: message => {
-        console.log(chalk.blue(`[ FOX SYSTEM | ℹ️ ]: ${message}`));
+        console.log(chalk.blue(`[ FOX SYSTEM | 📀 ]: ${message}`));
     },
     warn: message => {
         console.log(chalk.yellow(`[ FOX SYSTEM | ⚠️ ]: ${message}`));
