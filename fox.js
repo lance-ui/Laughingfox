@@ -164,7 +164,7 @@ async function initialize() {
 }
 
 const app = express();
-app.use(express.static(path.join(__dirname, "utils", "public")));
+//app.use(express.static(path.join(__dirname, "utils", "public")));
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "utils", "public", "index.html"));
 });
@@ -177,7 +177,8 @@ app.get("/qr", (req, res) => {
     if (qrCode == "skip_process") {
         res.status(200).json({ data: "already_authorized" });
     }
-    const filename = `img_qr.jpg`;
+    const timeStamp = setTimeout(Date.now, 10000)
+    const filename = `img_${timeStamp}.jpg`;
     const filePath = path.join(
         dirname(fileURLToPath(import.meta.url)),
         "utils",
@@ -199,6 +200,6 @@ app.get("/qr", (req, res) => {
         res.status(500).json({ error: err.message });
     });
 });
-app.listen(8080, "0.0.0.0", () => log.info("Bot running on port 8080"));
+app.listen(global.client.config.PORT, () => log.info("Bot running on port specified in config.json"));
 
 initialize();
