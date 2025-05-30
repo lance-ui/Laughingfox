@@ -77,11 +77,13 @@ async function main() {
 
     sock.ev.on("creds.update", saveCreds);
 
+    let qrCode;
     sock.ev.on("connection.update", async update => {
         const { connection, lastDisconnect, qr } = update;
-        let Qrdata;
         if (global.client.config.useQr) {
-            Qrdata = qr;
+            qrCode = qr;
+        }else {
+          qrCode = "disabled"
         }
         if (connection === "connecting" && !global.client.config.useQr) {
             const phoneNumber = global.client.config?.number;
@@ -103,6 +105,7 @@ async function main() {
         ) {
             setTimeout(main, 10000);
         } else if (connection === "open") {
+          qrCode = "already_authorized"
             log.success("Connected to WhatsApp");
         }
     });
