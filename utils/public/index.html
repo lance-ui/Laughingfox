@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <link rel="stylesheet" href="{{ url_for('utils', filename='public/style.css') }}" />
+    <title>Sypher™ Bot</title>
+</head>
+<body>
+    <div id="nav-bar">
+        <div id="menu" onclick="toggleMenu()">
+            <span class="material-icons">menu</span>
+        </div>
+        <div id="theme" onclick="toggleTheme()">
+            <span class="material-icons">wb_sunny</span>
+        </div>
+    </div>
+    
+    <div class="menu hidden" id="side-menu">
+        <a href="#" onclick="showSection('home')">Home</a>
+        <a href="#" onclick="showSection('about')">About</a>
+        <a href="#" onclick="showSection('contact')">Contact</a>
+    </div>
+    
+    <main id="container">
+        <!-- Home Section -->
+        <div class="container fade-in" id="home">
+            <h1 class="gradient-text">Welcome to Sypher™ Bot</h1>
+            <p class="subtitle">Scan the QR code below to authenticate with WhatsApp.</p>
+            
+            <!-- Loading State -->
+            <div id="loading" class="loading-container">
+                <div class="modern-loader">
+                    <div class="loader-ring"></div>
+                    <div class="loader-ring"></div>
+                    <div class="loader-ring"></div>
+                </div>
+                <p class="loading-text">Generating QR Code...</p>
+            </div>
+            
+            <!-- QR Code Display -->
+            <div id="qr-container" class="qr-container hidden">
+                <div class="qr-frame">
+                    <img src="" alt="QR code" id="qr_code" />
+                </div>
+                <div class="qr-instruction">
+                    <span class="material-icons">qr_code_scanner</span>
+                    <p>Scan with WhatsApp</p>
+                </div>
+                <button id="refresh-qr" class="modern-button">
+                    <span class="material-icons">refresh</span>
+                    Refresh QR Code
+                </button>
+            </div>
+            
+            <!-- Status Messages -->
+            <div id="status-message" class="status-message hidden">
+                <span class="material-icons" id="status-icon">info</span>
+                <p id="status-text"></p>
+            </div>
+            
+            <!-- Already Authorized State -->
+            <div id="authorized-state" class="authorized-state hidden">
+                <div class="success-animation">
+                    <span class="material-icons">check_circle</span>
+                </div>
+                <h2>Already Connected!</h2>
+                <p>Your WhatsApp is already authenticated and ready to use.</p>
+            </div>
+        </div>
+        
+        <!-- About Section -->
+        <div class="container hidden fade-in" id="about">
+            <div class="info-card">
+                <div class="info-card-header">
+                    <div class="avatar-placeholder">
+                        <span class="material-icons">smart_toy</span>
+                    </div>
+                </div>
+                <div class="info-card-content">
+                    <h1 class="gradient-text">About Sypher™ Bot</h1>
+                    <p>
+                        This bot allows you to interact with WhatsApp seamlessly. 
+                        To use it, simply scan the QR code displayed on the home page 
+                        and follow the instructions.
+                    </p>
+                    <p>
+                        Once authenticated, you can send and receive messages directly 
+                        through this interface with enhanced security and modern features.
+                    </p>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <span class="material-icons">security</span>
+                            <span>End-to-End Encryption</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="material-icons">speed</span>
+                            <span>Real-time Messaging</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="material-icons">cloud_sync</span>
+                            <span>Cloud Synchronization</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contact Section -->
+        <div class="container hidden fade-in" id="contact">
+            <div class="info-card">
+                <div class="info-card-header">
+                    <div class="avatar-placeholder">
+                        <span class="material-icons">contact_support</span>
+                    </div>
+                </div>
+                <div class="info-card-content">
+                    <h1 class="gradient-text">Contact Information</h1>
+                    <p>
+                        If you have any questions or need support, feel free to 
+                        reach out through our social media channels:
+                    </p>
+                    <div class="social-icons">
+                        <a href="https://github.com" target="_blank" class="social-icon github">
+                            <span class="material-icons">code</span>
+                            <span class="tooltip">GitHub</span>
+                        </a>
+                        <a href="https://facebook.com" target="_blank" class="social-icon facebook">
+                            <span class="material-icons">facebook</span>
+                            <span class="tooltip">Facebook</span>
+                        </a>
+                        <a href="https://telegram.org" target="_blank" class="social-icon telegram">
+                            <span class="material-icons">telegram</span>
+                            <span class="tooltip">Telegram</span>
+                        </a>
+                        <a href="https://wa.me/" target="_blank" class="social-icon whatsapp">
+                            <span class="material-icons">chat</span>
+                            <span class="tooltip">WhatsApp</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script src="{{ url_for('utils', filename='public/script.js') }}"></script>
+</body>
+</html>
