@@ -4,6 +4,7 @@
     "admins": ["260767876189"],
     "PREFIX": "-",
     "useQr": true,
+    "PORT": 8080,
     "autoload": true,
     "keys": { "pastebin": "R02n6-lNPJqKQCd5VtL4bKPjuK6ARhHb" },
     "unloadedCmds": ["credits to lance"]
