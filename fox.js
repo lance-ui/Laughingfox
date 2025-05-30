@@ -55,6 +55,7 @@ global.utils = utils;
 
 const { saveCreds, font } = utils;
 
+let qrCode;
 async function main() {
     log.info("Starting bot...");
     const sessionDir = path.join(__dirname, "cache", "auth_info_baileys");
@@ -76,8 +77,6 @@ async function main() {
     });
 
     sock.ev.on("creds.update", saveCreds);
-
-    let qrCode;
     sock.ev.on("connection.update", async update => {
         const { connection, lastDisconnect, qr } = update;
         if (global.client.config.useQr) {
