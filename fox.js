@@ -81,8 +81,8 @@ async function main() {
         const { connection, lastDisconnect, qr } = update;
         if (global.client.config.useQr) {
             qrCode = qr;
-        }else {
-          qrCode = "disabled"
+        } else {
+            qrCode = "disabled";
         }
         if (connection === "connecting" && !global.client.config.useQr) {
             const phoneNumber = global.client.config?.number;
@@ -104,7 +104,7 @@ async function main() {
         ) {
             setTimeout(main, 10000);
         } else if (connection === "open") {
-          qrCode = "already_authorized"
+            qrCode = "already_authorized";
             log.success("Connected to WhatsApp");
         }
     });
@@ -176,10 +176,10 @@ app.get("/data", (req, res) => {
 });
 app.get("/qr", (req, res) => {
     if (qrCode == null) return;
-    if (qrCode == "skip_process") {
+    if (qrCode == "already_authorized") {
         res.status(200).json({ data: "already_authorized" });
     }
-    const timeStamp = setTimeout(Date.now, 10000)
+    const timeStamp = setTimeout(Date.now, 10000);
     const filename = `img_${timeStamp}.jpg`;
     const filePath = path.join(
         dirname(fileURLToPath(import.meta.url)),
@@ -202,6 +202,8 @@ app.get("/qr", (req, res) => {
         res.status(500).json({ error: err.message });
     });
 });
-app.listen(global.client.config.PORT, () => log.info("Bot running on port specified in config.json"));
+app.listen(global.client.config.PORT, () =>
+    log.info("Bot running on port specified in config.json")
+);
 
 initialize();
