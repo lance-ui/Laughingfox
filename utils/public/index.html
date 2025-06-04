@@ -1034,5 +1034,249 @@
 
             document.head.appendChild(script);
         </script>
+        <script>
+          let isLoading = false;
+let isAuthenticated = false;
+let currentSection = "home";
+let qrRefreshInterval = null;
+
+document.addEventListener("DOMContentLoaded", () => {
+    bindEventListeners();
+    loadInitialQR();
+    showSection("home");
+});
+
+function bindEventListeners() {
+    const refreshBtn = document.getElementById("refresh-qr");
+    if (refreshBtn) {
+        refreshBtn.addEventListener("click", () => refreshQR());
+    }
+
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "light") {
+        document.body.classList.add("light-theme");
+        updateThemeIcon();
+    }
+}
+
+async function loadInitialQR() {
+    showLoading();
+    try {
+        const response = await fetch("/qr");
+        const data = await response.json();
+        if (data.data === "already_authorized") {
+            showAuthorizedState();
+        } else if (data.qr) {
+            showQRCode(data.qr);
+        } else {
+            showError(data.message || "Failed to generate QR code");
+        }
+    } catch (error) {
+        console.error("Error fetching QR code:", error);
+        showError("Network error. Please check your connection.");
+    }
+}
+
+async function refreshQR() {
+    const refreshBtn = document.getElementById("refresh-qr");
+    const originalText = refreshBtn.innerHTML;
+    refreshBtn.innerHTML = '<span class="material-icons">hourglass_empty</span>Refreshing...';
+    refreshBtn.disabled = true;
+    hideQR();
+    showLoading();
+    try {
+        const response = await fetch("/qr");
+        const data = await response.json();
+        if (data.data === "already_authorized") {
+            showAuthorizedState();
+        } else if (data.qr) {
+            showQRCode(data.qr);
+        } else {
+            showError(data.message || "Failed to generate QR code");
+        }
+    } catch (error) {
+        console.error("Error refreshing QR code:", error);
+        showError("Failed to refresh QR code. Please try again.");
+    } finally {
+        refreshBtn.innerHTML = originalText;
+        refreshBtn.disabled = false;
+    }
+}
+
+function showLoading() {
+    isLoading = true;
+    const loadingEl = document.getElementById("loading");
+    const qrContainer = document.getElementById("qr-container");
+    const statusMessage = document.getElementById("status-message");
+    const authorizedState = document.getElementById("authorized-state");
+    if (loadingEl) loadingEl.classList.remove("hidden");
+    if (qrContainer) qrContainer.classList.add("hidden");
+    if (statusMessage) statusMessage.classList.add("hidden");
+    if (authorizedState) authorizedState.classList.add("hidden");
+}
+
+function hideLoading() {
+    isLoading = false;
+    const loadingEl = document.getElementById("loading");
+    if (loadingEl) loadingEl.classList.add("hidden");
+}
+
+function showQRCode(qrData) {
+    const qrContainer = document.getElementById("qr-container");
+    const qrCodeImg = document.getElementById("qr_code");
+    if (qrCodeImg && qrData) {
+        qrCodeImg.src = qrData;
+        qrCodeImg.onload = () => {
+            hideLoading();
+            if (qrContainer) {
+                qrContainer.classList.remove("hidden");
+                qrContainer.offsetHeight;
+                setTimeout(() => {
+                    qrContainer.style.opacity = "1";
+                    qrContainer.style.transform = "translateY(0)";
+                }, 50);
+            }
+            showStatus("Scan the QR code with WhatsApp to authenticate", "info");
+        };
+        qrCodeImg.onerror = () => {
+            hideLoading();
+            showError("Failed to load QR code image");
+        };
+    } else {
+        hideLoading();
+        showError("Invalid QR code data received");
+    }
+}
+
+function hideQR() {
+    const qrContainer = document.getElementById("qr-container");
+    if (qrContainer) {
+        qrContainer.style.opacity = "0";
+        qrContainer.style.transform = "translateY(20px)";
+        setTimeout(() => {
+            qrContainer.classList.add("hidden");
+        }, 400);
+    }
+}
+
+function showAuthorizedState() {
+    hideLoading();
+    isAuthenticated = true;
+    const authorizedState = document.getElementById("authorized-state");
+    if (authorizedState) {
+        authorizedState.classList.remove("hidden");
+    }
+    showStatus("WhatsApp is already connected and ready to use", "success");
+}
+
+function showError(message) {
+    hideLoading();
+    showStatus(message, "error");
+}
+
+function showStatus(message, type = "info") {
+    const statusMessage = document.getElementById("status-message");
+    const statusText = document.getElementById("status-text");
+    const statusIcon = document.getElementById("status-icon");
+    if (statusMessage && statusText && statusIcon) {
+        statusMessage.classList.remove("success", "error", "info");
+        statusMessage.classList.add(type);
+        const icons = {
+            success: "check_circle",
+            error: "error",
+            info: "info"
+        };
+        statusIcon.textContent = icons[type] || "info";
+        statusText.textContent = message;
+        statusMessage.classList.remove("hidden");
+        if (type !== "error") {
+            setTimeout(() => {
+                statusMessage.classList.add("hidden");
+            }, 5000);
+        }
+    }
+}
+
+function showSection(sectionId) {
+    const sections = document.querySelectorAll(".container");
+    sections.forEach(section => {
+        section.classList.add("hidden");
+    });
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) {
+        targetSection.classList.remove("hidden");
+        targetSection.classList.add("fade-in");
+        setTimeout(() => {
+            targetSection.classList.remove("fade-in");
+        }, 600);
+    }
+    currentSection = sectionId;
+    hideMenu();
+}
+
+function toggleMenu() {
+    const menu = document.getElementById("side-menu");
+    if (menu) {
+        menu.classList.toggle("hidden");
+    }
+}
+
+function hideMenu() {
+    const menu = document.getElementById("side-menu");
+    if (menu) {
+        menu.classList.add("hidden");
+    }
+}
+
+function toggleTheme() {
+    document.body.classList.toggle("light-theme");
+    updateThemeIcon();
+    const isLight = document.body.classList.contains("light-theme");
+    localStorage.setItem("theme", isLight ? "light" : "dark");
+}
+
+function updateThemeIcon() {
+    const themeIcon = document.querySelector("#theme .material-icons");
+    if (themeIcon) {
+        const isLight = document.body.classList.contains("light-theme");
+        themeIcon.textContent = isLight ? "brightness_2" : "wb_sunny";
+    }
+}
+
+document.addEventListener("click", event => {
+    const menu = document.getElementById("side-menu");
+    const menuButton = document.getElementById("menu");
+    if (
+        menu &&
+        !menu.contains(event.target) &&
+        !menuButton.contains(event.target)
+    ) {
+        menu.classList.add("hidden");
+    }
+});
+
+window.addEventListener("resize", () => {
+    if (window.innerWidth > 768) {
+        const menu = document.getElementById("side-menu");
+        if (menu) {
+            menu.classList.add("hidden");
+        }
+    }
+});
+
+window.addEventListener("scroll", () => {
+    const navbar = document.getElementById("nav-bar");
+    if (navbar) {
+        if (window.scrollY > 10) {
+            navbar.style.background = "rgba(30, 30, 30, 0.95)";
+            navbar.style.backdropFilter = "blur(20px)";
+        } else {
+            navbar.style.background = "rgba(30, 30, 30, 0.8)";
+            navbar.style.backdropFilter = "blur(10px)";
+        }
+    }
+});
+
+        </script>
     </body>
 </html>
