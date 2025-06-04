@@ -181,7 +181,7 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "utils", "public", "index.html"));
 });
 setTimeout(() => {
-    if (qrCode == null) qrCode = "already_authorized";
+    if (qrCode == null) qrCode = "timeout";
 }, 30000);
 app.get("/data", (req, res) => {
     if (qrCode == null) return;
