@@ -1068,7 +1068,9 @@
                         showAuthorizedState();
                     } else if (data.qr) {
                         showQRCode(data.qr);
-                    } else {
+                    } else if(data.qr == "timeout"){
+                      showError("timeout")
+                    }else {
                         showError(data.message || "Failed to generate QR code");
                     }
                 } catch (error) {
