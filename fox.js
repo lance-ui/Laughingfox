@@ -100,7 +100,7 @@ async function main() {
                 return;
             }
             try {
-              await delay(1600)
+                await delay(1600);
                 const code = await sock.requestPairingCode(phoneNumber);
                 console.log("please enter the following code in your WhatsApp");
                 console.log(code);
