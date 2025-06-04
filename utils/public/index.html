@@ -1069,7 +1069,9 @@
                     } else if (data.qr) {
                         showQRCode(data.qr);
                     } else if (data.qr == "timeout") {
-                        showError("30s has exceeded thus we shall assume you are already authorized or its just a timeout");
+                        showError(
+                            "30s has exceeded thus we shall assume you are already authorized or its just a timeout"
+                        );
                     } else {
                         showError(data.message || "Failed to generate QR code");
                     }
