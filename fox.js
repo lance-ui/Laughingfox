@@ -9,7 +9,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import P from "pino";
 import pkg, {
-    default: makeWASocket,
+    default: lance,
     useMultiFileAuthState,
     fetchLatestBaileysVersion,
     Browsers,
@@ -65,7 +65,7 @@ async function main() {
     const { state } = await useMultiFileAuthState(sessionDir);
     const { version } = await fetchLatestBaileysVersion();
 
-    const sock = makeWASocket({
+    const sock = lance({
         version,
         auth: {
             creds: state.creds,
