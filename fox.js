@@ -9,7 +9,6 @@ import dotenv from "dotenv";
 dotenv.config();
 import P from "pino";
 import {
-    makeWASocket,
     useMultiFileAuthState,
     fetchLatestBaileysVersion,
     Browsers,
@@ -55,7 +54,7 @@ global.client = {
 };
 
 global.utils = utils;
-
+const { default: lance } = pkg;
 const { saveCreds, font } = utils;
 
 let qrCode;
@@ -66,13 +65,12 @@ async function main() {
     const { state } = await useMultiFileAuthState(sessionDir);
     const { version } = await fetchLatestBaileysVersion();
 
-    const sock = makeWASocket({
-        version,
+    const sock = lance({
         auth: {
             creds: state.creds,
             keys: makeCacheableSignalKeyStore(
                 state.keys,
-                pino({ level: "fatal" }).child({ level: "fatal" })
+                P({ level: "fatal" }).child({ level: "fatal" })
             )
         },
         printQRInTerminal: global.client.config.useQr,
