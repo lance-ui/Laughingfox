@@ -54,7 +54,7 @@ global.client = {
 };
 
 global.utils = utils;
-const { default: lance } = pkg;
+const { default: lance, proto } = pkg;
 const { saveCreds, font } = utils;
 
 let qrCode;
@@ -182,7 +182,7 @@ app.get("/", (req, res) => {
 });
 setTimeout(() => {
     if (qrCode == null) qrCode = "already_authorized";
-},30000);
+}, 30000);
 app.get("/data", (req, res) => {
     if (qrCode == null) return;
     res.json({ data: qrCode });
