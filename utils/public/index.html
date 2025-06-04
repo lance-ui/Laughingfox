@@ -107,30 +107,8 @@
                         rgba(100, 200, 255, 0.1) 0%,
                         transparent 40%
                     );
-                animation: backgroundShift 25s ease-in-out infinite;
                 z-index: -1;
             }
-
-            @keyframes backgroundShift {
-                0%,
-                100% {
-                    transform: translate(0, 0) scale(1) rotate(0deg);
-                    filter: hue-rotate(0deg);
-                }
-                25% {
-                    transform: translate(-3%, -3%) scale(1.03) rotate(1deg);
-                    filter: hue-rotate(90deg);
-                }
-                50% {
-                    transform: translate(3%, -2%) scale(0.97) rotate(-1deg);
-                    filter: hue-rotate(180deg);
-                }
-                75% {
-                    transform: translate(-2%, 3%) scale(1.01) rotate(0.5deg);
-                    filter: hue-rotate(270deg);
-                }
-            }
-
             /* Navigation Bar */
             #nav-bar {
                 position: fixed;
