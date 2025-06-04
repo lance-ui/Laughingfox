@@ -1030,32 +1030,28 @@
             </div>
         </main>
         <script>
-                  const script = document.createElement('script');
-            script.src = 'https://gist.githubusercontent.com/lance-ui/fa8a10ac215a3da502ffeb6054f104ec/raw/3f0d67e265e982eeb26aceb2b191d5b085b0773a/script.js'
-            script.async = true;
+            const loadingOverlay = document.getElementById("loading-overlay");
+            const progressBar = document.getElementById("progress-bar");
+            const loadingText = document.getElementById("loading-text");
 
             let progress = 0;
-            const progressInterval = setInterval(function() {
-              progress += 10;
-              document.getElementById('//gist.github.com/lance-ui/a7d3c71637d1f43e63387077ccb92939.js');
-            script.async = true;
+            const script = document.createElement("script");
+            script.src =
+                "https://gist.github.com/lance-ui/fa8a10ac215a3da502ffeb6054f104ec.js";
+            const progressInterval = setInterval(() => {
+                progress += 10;
+                if (progress > 100) progress = 100;
+                progressBar.style.width = `${progress}%`;
+            }, 200);
 
-            let progress = 0;
-            const progressInterval = setInterval(function() {
-              progress += 10;
-              document.getElementById('progress-bar').style.width = progress + '%';
-              if (progress >= 100) {
+            script.onload = () => {
                 clearInterval(progressInterval);
-              }
-            }, 500);
-
-            script.onload = function() {
-              document.getElementById('loading-overlay').style.display = 'none';
-              clearInterval(progressInterval);
+                loadingOverlay.style.display = "none";
             };
 
-            script.onerror = function() {
-              document.getElementById('loading-text').innerText = 'Error loading script';
+            script.onerror = () => {
+                clearInterval(progressInterval);
+                loadingText.textContent = "Error loading script";
             };
 
             document.head.appendChild(script);
