@@ -25,6 +25,7 @@ import messageHandler from "./handler/messagehandler.js";
 import fs from "fs-extra";
 import express from "express";
 import qr from "qr-image";
+import { File } from "megajs"
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -44,6 +45,30 @@ const loadConfig = async () => {
     }
 };
 
+async function loadSessionFromMega() {
+  if (!fs.existsSync(__dirname + '/cache/auth_info_baileys/creds.json')) {
+    if (!global.client.config.SESSION_ID) {
+      throw new Error('Please add your session to SESSION_ID in config!')
+    }
+    
+    const sessdata = global
+    client.config.SESSION_ID.replace("sypher™--", '')
+    const filer = File.fromURL(`https://mega.nz/file/${sessdata}`)
+    
+    return new Promise((resolve, reject) => {
+      filer.download((err, data) => {
+        if (err) reject(err)
+        fs.writeFile(__dirname + '/cache/auth_info_baileys/creds.json', data, (err) => {
+          if (err) reject(err)
+          console.log("Session downloaded from Mega.nz ✅")
+          resolve()
+        })
+      })
+    })
+  }
+  return Promise.resolve()
+}
+
 global.client = {
     config: await loadConfig(),
     commands: new Map(),
@@ -56,6 +81,14 @@ global.client = {
 global.utils = utils;
 const { default: lance, proto } = pkg;
 const { saveCreds, font } = utils;
+
+if(global.client.config.usePairCode){
+  try{
+    loadSessionFromMega()
+  }catch (error){
+    log.error(error.message)
+  }
+}
 
 let qrCode;
 async function main() {
