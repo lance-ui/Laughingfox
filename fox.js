@@ -9,11 +9,13 @@ import dotenv from "dotenv";
 dotenv.config();
 import P from "pino";
 import pkg, {
-    makeWASocket,
+    default: makeWASocket,
     useMultiFileAuthState,
     fetchLatestBaileysVersion,
     Browsers,
-    DisconnectReason
+    DisconnectReason,
+    makeCacheableSignalKeyStore,
+    delay
 } from "@whiskeysockets/baileys";
 import utils from "./utils/utils.js";
 import path, { dirname } from "path";
@@ -65,9 +67,15 @@ async function main() {
 
     const sock = makeWASocket({
         version,
-        auth: state,
+        auth: {
+            creds: state.creds,
+            keys: makeCacheableSignalKeyStore(
+                state.keys,
+                pino({ level: "fatal" }).child({ level: "fatal" })
+            )
+        },
         printQRInTerminal: global.client.config.useQr,
-        browser: Browsers.appropriate("chrome"),
+        browser: Browsers.macOS("Safari"),
         markOnlineOnConnect: true,
         defaultQueryTimeoutMs: 60000,
         connectTimeoutMs: 60000,
@@ -91,6 +99,7 @@ async function main() {
                 return;
             }
             try {
+              await delay(1600)
                 const code = await sock.requestPairingCode(phoneNumber);
                 console.log("please enter the following code in your WhatsApp");
                 console.log(code);
