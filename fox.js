@@ -107,13 +107,15 @@ async function main() {
             } catch (error) {
                 log.error("Error requesting pairing code: \n" + error.message);
             }
-        } else if (
+        }
+        if (
             connection === "close" &&
             lastDisconnect?.error?.output?.statusCode ===
                 DisconnectReason.restartRequired
         ) {
             setTimeout(main, 10000);
-        } else if (connection === "open") {
+        }
+        if (connection === "open") {
             qrCode = "already_authorized";
             log.success("Connected to WhatsApp");
         }
@@ -176,9 +178,12 @@ async function initialize() {
 }
 
 const app = express();
-//app.use(express.static(path.join(__dirname, "utils", "public")));
+app.use(express.static(path.join(__dirname, "utils", "public")));
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "utils", "public", "index.html"));
+});
+setTimeout(30000, () => {
+    if (qrCode == null) qrCode = "already_authorized";
 });
 app.get("/data", (req, res) => {
     if (qrCode == null) return;
