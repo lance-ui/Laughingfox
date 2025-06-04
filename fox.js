@@ -5,9 +5,6 @@ process.on("uncaughtException", error =>
     console.error("Uncaught Exception:", error)
 );
 
-
-
-
 import dotenv from "dotenv";
 dotenv.config();
 import P from "pino";
