@@ -192,12 +192,13 @@ app.get("/qr", (req, res) => {
     if (qrCode == "already_authorized") {
         res.status(200).json({ data: "already_authorized" });
     }
-    const timeStamp = setTimeout(Date.now, 10000);
+    const timeStamp = setTimeout(Date.now, 1000);
     const filename = `img_${timeStamp}.jpg`;
     const filePath = path.join(
         dirname(fileURLToPath(import.meta.url)),
         "utils",
         "public",
+        timeStamp,
         filename
     );
     fs.ensureDirSync(path.dirname(filePath));
@@ -207,7 +208,7 @@ app.get("/qr", (req, res) => {
 
     qr_svg.on("end", () => {
         log.info(`QR code saved to ${filename}`);
-        res.status(200).json({ qr: filename });
+        res.status(200).json({ qr: `${timeStamp}/${filename}` });
     });
 
     qr_svg.on("error", err => {
