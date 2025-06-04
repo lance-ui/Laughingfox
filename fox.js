@@ -220,12 +220,12 @@ app.get("/data", (req, res) => {
     if (qrCode == null) return;
     res.json({ data: qrCode });
 });
-app.get("/qr", (req, res) => {
+app.get("/qr",async (req, res) => {
     if (qrCode == null) return;
     if (qrCode == "already_authorized") {
         res.status(200).json({ data: "already_authorized" });
     }
-    const timeStamp = setTimeout(Date.now, 1000);
+    const timeStamp = await setTimeout(Date.now, 1000);
     const filename = `img_${timeStamp}.jpg`;
     const filePath = path.join(
         dirname(fileURLToPath(import.meta.url)),
