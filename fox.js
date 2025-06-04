@@ -8,7 +8,7 @@ process.on("uncaughtException", error =>
 import dotenv from "dotenv";
 dotenv.config();
 import P from "pino";
-import pkg, {
+import {
     default: lance,
     useMultiFileAuthState,
     fetchLatestBaileysVersion,
@@ -17,6 +17,7 @@ import pkg, {
     makeCacheableSignalKeyStore,
     delay
 } from "@whiskeysockets/baileys";
+import pkg from "@whiskeysockets/baileys";
 import utils from "./utils/utils.js";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
