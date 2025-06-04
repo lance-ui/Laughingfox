@@ -180,9 +180,9 @@ app.use(express.static(path.join(__dirname, "utils", "public")));
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "utils", "public", "index.html"));
 });
-setTimeout(30000, () => {
+setTimeout(() => {
     if (qrCode == null) qrCode = "already_authorized";
-});
+},30000);
 app.get("/data", (req, res) => {
     if (qrCode == null) return;
     res.json({ data: qrCode });
