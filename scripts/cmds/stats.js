@@ -23,26 +23,26 @@ export default {
     const latency = Date.now() - start;
 
     const report = `
-${font.bold(Bot Status)}
+${font.bold("Bot Status")}
 • Latency: ${latency}ms
 • Uptime: ${formatUptime(process.uptime() * 1000)}
 • CPU Cores: ${os.cpus().length}
 • CPU Model: ${cpuInfo.model}
 • CPU Speed: ${cpuInfo.speed} GHz
 
-${font.bold(Memory Usage)}
+${font.bold("Memory Usage")}
 • Total: ${formatBytes(memInfo.total)}
 • Used: ${formatBytes(memInfo.active)}
 • Free: ${formatBytes(memInfo.free)}
 
-${font.bold(System Info)}
+${font.bold("System Info")}
 • Platform: ${os.platform()} (${os.arch()})
 • Hostname: ${os.hostname()}
 • Node.js: ${nodeInfo}
 • V8 Engine: ${v8Info}
 • OS: ${getOSInfo()}
 
-${font.bold(Bot Information)}
+${font.bold("Bot Information")}
 • Users: not yet
 • Threads: not yet
 • Contact Admin: not yet
