@@ -9,10 +9,10 @@ export default {
     category: "general",
     role: 0,
   },
-  onRun: async ({ sock, event, threadID, args }) => {
+  onRun: async ({ sock, event, threadID, args, font }) => {
     const start = Date.now();
     const msg = await sock.sendMessage(threadID, {
-      text: `Loading...`,
+      text: `...Loading...`,
     });
 
     const sysInfo = await si.system();
@@ -23,26 +23,26 @@ export default {
     const latency = Date.now() - start;
 
     const report = `
-*Bot Status
+${font.bold(Bot Status)}
 • Latency: ${latency}ms
 • Uptime: ${formatUptime(process.uptime() * 1000)}
 • CPU Cores: ${os.cpus().length}
 • CPU Model: ${cpuInfo.model}
 • CPU Speed: ${cpuInfo.speed} GHz
 
-*Memory Usage
+${font.bold(Memory Usage)}
 • Total: ${formatBytes(memInfo.total)}
 • Used: ${formatBytes(memInfo.active)}
 • Free: ${formatBytes(memInfo.free)}
 
-*System Info
+${font.bold(System Info)}
 • Platform: ${os.platform()} (${os.arch()})
 • Hostname: ${os.hostname()}
 • Node.js: ${nodeInfo}
 • V8 Engine: ${v8Info}
 • OS: ${getOSInfo()}
 
-*Bot Information
+${font.bold(Bot Information)}
 • Users: not yet
 • Threads: not yet
 • Contact Admin: not yet
