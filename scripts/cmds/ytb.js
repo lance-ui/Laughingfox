@@ -11,7 +11,7 @@ export default {
         category: "media"
     },
 
-    async onRun({ sock, event, args }) {
+    async onRun({ sock, event, args, message }) {
         const chatId = event.key.remoteJid;
 
         if (args.length === 0) {
@@ -83,12 +83,9 @@ export default {
             listevent +=
                 "_Reply with the number (1-5) to select and download._";
 
-            const sentevent = await sock.sendMessage(chatId, {
-                text: listevent,
-                quoted: event
-            });
-            global.client.replies.set(sentevent.key.id, {
-                commandName: this.config.name,
+            const sentevent = await message.reply(listevent)
+            global.client.replies.set(String(sentevent.key.id), {
+                commandName: "ytb",
                 videos: videos,
                 type: type
             });
