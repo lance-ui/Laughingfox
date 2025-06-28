@@ -5,3 +5,4 @@ export default {
   onRun: async ({message,senderID}) => {
     message.reply(senderID)
   }
+}
