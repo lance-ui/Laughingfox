@@ -37,7 +37,7 @@ async function handler({
     const role = command.config?.role || 0;
     if (role == 1) {
       if(
-!senderID.replace("@s.whatsapp.net", "").includes(config.admins)
+!config.admins.includes(senderID.replace("@lid", ""))
       ) {
         return message.reply(
           "❌ | the command that you are using can only be used by bot admins"
