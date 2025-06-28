@@ -128,16 +128,32 @@ export default async ({ font, sock, event, log, proto }) => {
             );
         }
         if (args.toLowerCase() == "prefix") {
-            message.reply(`✅ PREFIX: ${global.client.config.PREFIX}`);
-            return;
+            const form = `◣✦◥▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔◤✦◢
+               𝗕𝗢𝗧 𝗣𝗥𝗘𝗙𝗜𝗫•[${global.client.config.PREFIX}]
+◤✦◢▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁◣✦◥`;
+            const datapath = await path.join(
+                __dirname,
+                "..",
+                "cache",
+                "tmp",
+                "0bcb6c5caa664b982dd49d18aca40941.jpg"
+            );
+            return await message.sendImage(form, datapath);
         }
         if (!isPrefixed) return;
         const [commandName, ...commandArgs] = args
             .slice(global.client.config.PREFIX.length)
             .trim()
             .split(" ");
-        
-        await handleOnReply({sock, event, threadID,senderID,args: commandArgs,proto})
+
+        await handleOnReply({
+            sock,
+            event,
+            threadID,
+            senderID,
+            args: commandArgs,
+            proto
+        });
 
         if (!global.client.commands.has(commandName.toLowerCase())) {
             await sock.sendMessage(threadID, {
