@@ -83,7 +83,7 @@ export default {
             listevent +=
                 "_Reply with the number (1-5) to select and download._";
 
-            const sentevent = await message.reply(listevent)
+            const sentevent = await message.send(listevent);
             global.client.replies.set(String(sentevent.key.id), {
                 commandName: "ytb",
                 videos: videos,
@@ -101,7 +101,7 @@ export default {
     async onReply({ sock, event, args, data }) {
         const { videos, type } = data;
         try {
-            await downloadAndSendMedia(videos, threadID, event, type,sock);
+            await downloadAndSendMedia(videos, threadID, event, type, sock);
         } catch (err) {
             console.log(err);
             message.reply(
@@ -111,7 +111,7 @@ export default {
     }
 };
 
-const downloadAndSendMedia = async (videos, chatId, event, type,sock) => {
+const downloadAndSendMedia = async (videos, chatId, event, type, sock) => {
     try {
         const body = args.join(" ");
         const choice = parseInt(body.trim());
