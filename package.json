@@ -15,7 +15,7 @@
     "license": "ISC",
     "description": "",
     "dependencies": {
-        "@whiskeysockets/baileys": "^6.17.16",
+        "@whiskeysockets/baileys": "^6.17.17",
         "qr-image": "^3.2.0",
         "axios": "^1.9.0",
         "baileys": "^6.7.16",
