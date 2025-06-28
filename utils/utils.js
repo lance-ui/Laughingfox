@@ -5,7 +5,7 @@ import path, { dirname } from "path";
 import fs from "fs-extra";
 import { fileURLToPath } from "url";
 import font from "./fonts.js";
-import schedule from 'node-schedule';
+import schedule from "node-schedule";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -41,7 +41,7 @@ async function loadCommands() {
                     if (command.config?.aliase) {
                         global.client.commands.set(
                             command.config.aliase.forEach(k => {
-                              return k
+                                return k;
                             }),
                             command
                         );
@@ -115,36 +115,36 @@ async function saveCreds(creds) {
 }
 
 async function removeFiles(filePath, time, callback) {
-  if(!filePath) return 
-  const fileName = path.basename(filePath);
-  const rule = new schedule.RecurrenceRule();
-  if (time.includes('h')) {
-    const hours = parseInt(time.replace('h', ''));
-    rule.hour = new schedule.Range(0, 23, hours);
-  } else if (time.includes('m')) {
-    const minutes = parseInt(time.replace('m', ''));
-    rule.minute = new schedule.Range(0, 59, minutes);
-  }
-
-  schedule.scheduleJob(rule, async () => {
-    try {
-      if (await fs.pathExists(filePath)) {
-        await fs.unlink(filePath);
-        log.info(`Removed file: ${filePath}`);
-        if (callback) callback(null, `File removed: ${filePath}`);
-      } else {
-        log.info(`File not found: ${filePath}`);
-        if (callback) callback(new Error(`File not found: ${filePath}`));
-      }
-    } catch (error) {
-      log.error(`Error removing file: ${error.message}`);
-      if (callback) callback(error);
+    if (!filePath) return;
+    const fileName = path.basename(filePath);
+    const rule = new schedule.RecurrenceRule();
+    if (time.includes("h")) {
+        const hours = parseInt(time.replace("h", ""));
+        rule.hour = new schedule.Range(0, 23, hours);
+    } else if (time.includes("m")) {
+        const minutes = parseInt(time.replace("m", ""));
+        rule.minute = new schedule.Range(0, 59, minutes);
     }
-  });
 
-  log.info(`Job started. Removing ${fileName} ${time}.`);
+    schedule.scheduleJob(rule, async () => {
+        try {
+            if (await fs.pathExists(filePath)) {
+                await fs.unlink(filePath);
+                log.info(`Removed file: ${filePath}`);
+                if (callback) callback(null, `File removed: ${filePath}`);
+            } else {
+                log.info(`File not found: ${filePath}`);
+                if (callback)
+                    callback(new Error(`File not found: ${filePath}`));
+            }
+        } catch (error) {
+            log.error(`Error removing file: ${error.message}`);
+            if (callback) callback(error);
+        }
+    });
+
+    log.info(`Job started. Removing ${fileName} ${time}.`);
 }
-
 
 const utils = {
     loadAll,
