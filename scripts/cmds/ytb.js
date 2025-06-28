@@ -137,7 +137,7 @@ const downloadAndSendMedia = async (videos, chatId, event, type,sock) => {
         );
 
         const format = type === "audio" ? "mp3" : "mp4";
-        const dlApiUrl = `https://kaiz-apis.gleeze.com/api/ytdl?url=${selectedVideo.id}&apikey=cc0249f7-d453-48b3-883b-27997eab0af6`;
+        const dlApiUrl = `https://kaiz-apis.gleeze.com/api/ytdl?url=https://youtu.be/6GYkxMnphbM?si=${selectedVideo.id}&apikey=cc0249f7-d453-48b3-883b-27997eab0af6`;
 
         const dlRes = await axios.get(dlApiUrl);
         const dlData = dlRes.data;
