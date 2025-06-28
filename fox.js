@@ -80,7 +80,7 @@ global.client = {
     config: await loadConfig(),
     commands: new Map(),
     events: new Map(),
-    onReply: new Map(),
+    replies: new Map(),
     cooldowns: new Map(),
     startTime: Date.now()
 };
