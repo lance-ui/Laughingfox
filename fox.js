@@ -25,7 +25,7 @@ import messageHandler from "./handler/messagehandler.js";
 import fs from "fs-extra";
 import express from "express";
 import qr from "qr-image";
-import { File } from "megajs"
+import { File } from "megajs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -46,27 +46,34 @@ const loadConfig = async () => {
 };
 
 async function loadSessionFromMega() {
-  if (!fs.existsSync(__dirname + '/cache/auth_info_baileys/creds.json')) {
-    if (!global.client.config.SESSION_ID) {
-      throw new Error('Please add your session to SESSION_ID in config!')
+    if (!fs.existsSync(__dirname + "/cache/auth_info_baileys/creds.json")) {
+        if (!global.client.config.SESSION_ID) {
+            throw new Error("Please add your session to SESSION_ID in config!");
+        }
+
+        const sessdata = global;
+        client.config.SESSION_ID.replace("sypher™--", "");
+        const filer = File.fromURL(`https://mega.nz/file/${sessdata}`);
+
+        return new Promise((resolve, reject) => {
+            filer.download((err, data) => {
+                if (err) reject(err);
+                fs.writeFile(
+                    __dirname + "/cache/auth_info_baileys/creds.json",
+                    data,
+                    err => {
+                        if (err) {
+                          log.error("failed to load creds from mega")
+                          process.exit(2)
+                        };
+                        log.success("Session downloaded from Mega.nz ✅");
+                        resolve();
+                    }
+                );
+            });
+        });
     }
-    
-    const sessdata = global
-    client.config.SESSION_ID.replace("sypher™--", '')
-    const filer = File.fromURL(`https://mega.nz/file/${sessdata}`)
-    
-    return new Promise((resolve, reject) => {
-      filer.download((err, data) => {
-        if (err) reject(err)
-        fs.writeFile(__dirname + '/cache/auth_info_baileys/creds.json', data, (err) => {
-          if (err) reject(err)
-          console.log("Session downloaded from Mega.nz ✅")
-          resolve()
-        })
-      })
-    })
-  }
-  return Promise.resolve()
+    return Promise.resolve();
 }
 
 global.client = {
@@ -81,17 +88,8 @@ global.client = {
 global.utils = utils;
 const { default: lance, proto } = pkg;
 const { saveCreds, font } = utils;
-
-if(global.client.config.usePairCode){
-  try{
-    loadSessionFromMega()
-  }catch (error){
-    log.error(error.message)
-  }
-}
-
-let qrCode;
 async function main() {
+    await loadSessionFromMega()
     log.info("Starting bot...");
     const sessionDir = path.join(__dirname, "cache", "auth_info_baileys");
     await fs.ensureDir(sessionDir);
@@ -106,7 +104,7 @@ async function main() {
                 P({ level: "fatal" }).child({ level: "fatal" })
             )
         },
-        printQRInTerminal: global.client.config.useQr,
+        printQRInTerminal: false,
         browser: Browsers.macOS("Safari"),
         markOnlineOnConnect: true,
         defaultQueryTimeoutMs: 60000,
@@ -118,27 +116,7 @@ async function main() {
 
     sock.ev.on("creds.update", saveCreds);
     sock.ev.on("connection.update", async update => {
-        const { connection, lastDisconnect, qr } = update;
-        if (global.client.config.useQr) {
-            qrCode = qr;
-        } else {
-            qrCode = "disabled";
-        }
-        if (connection === "connecting" && !global.client.config.useQr) {
-            const phoneNumber = global.client.config?.number;
-            if (!phoneNumber) {
-                log.error("Phone number not found in config");
-                return;
-            }
-            try {
-                await delay(1600);
-                const code = await sock.requestPairingCode(phoneNumber);
-                console.log("please enter the following code in your WhatsApp");
-                console.log(code);
-            } catch (error) {
-                log.error("Error requesting pairing code: \n" + error.message);
-            }
-        }
+        const { connection, lastDisconnect } = update;
         if (
             connection === "close" &&
             lastDisconnect?.error?.output?.statusCode ===
@@ -147,7 +125,6 @@ async function main() {
             setTimeout(main, 10000);
         }
         if (connection === "open") {
-            qrCode = "already_authorized";
             log.success("Connected to WhatsApp");
         }
     });
@@ -209,46 +186,6 @@ async function initialize() {
 }
 
 const app = express();
-app.use(express.static(path.join(__dirname, "utils", "public")));
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "utils", "public", "index.html"));
-});
-setTimeout(() => {
-    if (qrCode == null) qrCode = "timeout";
-}, 30000);
-app.get("/data", (req, res) => {
-    if (qrCode == null) return;
-    res.json({ data: qrCode });
-});
-app.get("/qr",async (req, res) => {
-    if (qrCode == null) return;
-    if (qrCode == "already_authorized") {
-        res.status(200).json({ data: "already_authorized" });
-    }
-    const timeStamp = await setTimeout(Date.now, 1000);
-    const filename = `img_${timeStamp}.jpg`;
-    const filePath = path.join(
-        dirname(fileURLToPath(import.meta.url)),
-        "utils",
-        "public",
-        timeStamp,
-        filename
-    );
-    fs.ensureDirSync(path.dirname(filePath));
-
-    const qr_svg = qr.image(qrCode, { type: "jpg", size: 10 });
-    qr_svg.pipe(fs.createWriteStream(filePath));
-
-    qr_svg.on("end", () => {
-        log.info(`QR code saved to ${filename}`);
-        res.status(200).json({ qr: `${timeStamp}/${filename}` });
-    });
-
-    qr_svg.on("error", err => {
-        log.error(err);
-        res.status(500).json({ error: err.message });
-    });
-});
 app.listen(global.client.config.PORT, () =>
     log.info("Bot running on port specified in config.json")
 );
