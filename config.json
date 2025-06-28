@@ -7,6 +7,8 @@
     "useQr": true,
     "PORT": 8080,
     "autoload": true,
-    "keys": { "pastebin": "R02n6-lNPJqKQCd5VtL4bKPjuK6ARhHb" },
+    "keys": { 
+    "pastebin": "R02n6-lNPJqKQCd5VtL4bKPjuK6ARhHb",
+    "kaiz-api-key": "cc0249f7-d453-48b3-883b-27997eab0af6"},
     "unloadedCmds": ["credits to lance"]
 }
