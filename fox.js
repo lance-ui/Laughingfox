@@ -73,7 +73,7 @@ global.client = {
     config: await loadConfig(),
     commands: new Map(),
     events: new Map(),
-    buttons: new Map(),
+    onReply: new Map(),
     cooldowns: new Map(),
     startTime: Date.now()
 };
