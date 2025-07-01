@@ -12,13 +12,10 @@ export default {
     const cmd = args[0].toLowerCase();
     const key = args[1]?.toLowerCase();
     const value = args[2];
+    const value2 = args[3];
 
     try {
       switch (cmd) {
-        case "list":
-        case "-l":
-          const text = Object.keys(config).map(k => `${k}: ${config[k]}`).join("\n");
-          return message.reply(text);
         case "get":
           if (key) {
             return message.reply(`${key}: ${config[key]}`);
@@ -33,7 +30,11 @@ export default {
             } else if (value === "0" || value.toLowerCase() === "false") {
               config[key] = false;
             } else {
-              config[key] = value;
+              if (value2 == "-u"){
+                config[key.toUpperCase()] = value;
+              } else {
+                config[key] = value;
+              }
             }
             fs.writeFileSync(
               new URL("./../../config.json", import.meta.url),

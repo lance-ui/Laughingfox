@@ -7,15 +7,15 @@ export default {
 
         let commandList = Array.from(global.client.commands.keys())
             .map((name, index) => {
-                return `${index + 1}. ${font.mono(name)}`;
+                return `${index + 1}. ${font.mono(String(name))}`;
             })
             .join("\n");
 
         helpMessage += commandList + `\n\n`;
         helpMessage += `Total Commands: [ ${global.client.commands.size} ]\n`;
-        helpMessage += `Prefix: [ ${font.mono(
+        helpMessage += `Prefix: [ ${font.mono(String(
             global.client.config.PREFIX
-        )} ]\n`;
+        ))} ]\n`;
 
         await message.reply(helpMessage);
     }

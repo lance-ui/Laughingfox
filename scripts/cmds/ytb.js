@@ -2,6 +2,11 @@ import axios from "axios";
 import fs from "fs";
 import path from "path";
 import os from "os";
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+
 export default {
     config: {
         name: "ytb",
@@ -11,7 +16,7 @@ export default {
         category: "media"
     },
 
-    async onRun({ sock, event, args, message }) {
+    async onRun({ sock, event, args }) {
         const chatId = event.key.remoteJid;
 
         if (args.length === 0) {
@@ -83,9 +88,12 @@ export default {
             listevent +=
                 "_Reply with the number (1-5) to select and download._";
 
-            const sentevent = await message.send(listevent);
-            global.client.replies.set(String(sentevent.key.id), {
-                commandName: "ytb",
+            const sentevent = await sock.sendMessage(chatId, {
+                text: listevent,
+                quoted: event
+            });
+            global.client.replies.set(sentevent.key.id, {
+                commandName: this.config.name,
                 videos: videos,
                 type: type
             });
@@ -98,10 +106,10 @@ export default {
             );
         }
     },
-    async onReply({ sock, event, args, data }) {
+    onReply: async ({ sock, event, args, data, threadID, senderID }) => {
         const { videos, type } = data;
         try {
-            await downloadAndSendMedia(videos, threadID, event, type, sock);
+            await downloadAndSendMedia(videos, threadID, event, type,sock,args);
         } catch (err) {
             console.log(err);
             message.reply(
@@ -111,9 +119,8 @@ export default {
     }
 };
 
-const downloadAndSendMedia = async (videos, chatId, event, type, sock) => {
+const downloadAndSendMedia = async (videos, chatId, event, type,sock, body) => {
     try {
-        const body = args.join(" ");
         const choice = parseInt(body.trim());
         if (isNaN(choice) || choice < 1 || choice > videos.length) {
             return await sock.sendMessage(
@@ -126,6 +133,7 @@ const downloadAndSendMedia = async (videos, chatId, event, type, sock) => {
         }
 
         const selectedVideo = videos[choice - 1];
+        console.log(selectedVideo)
 
         await sock.sendMessage(
             chatId,
@@ -134,12 +142,12 @@ const downloadAndSendMedia = async (videos, chatId, event, type, sock) => {
         );
 
         const format = type === "audio" ? "mp3" : "mp4";
-        const dlApiUrl = `https://kaiz-apis.gleeze.com/api/ytdl?url=https://youtu.be/6GYkxMnphbM?si=${selectedVideo.id}&apikey=cc0249f7-d453-48b3-883b-27997eab0af6`;
+        const dlApiUrl = `https://kaiz-apis.gleeze.com/api/ytdl?apikey=aff47865-cc4a-4b63-82ba-628864c4b18a&url=https://m.youtube.com/watch?v=${selectedVideo.id}`;
 
         const dlRes = await axios.get(dlApiUrl);
         const dlData = dlRes.data;
-
-        if (!dlData || !dlData.download_url) {
+        console.log(dlData)
+        if (!dlData.download_url) {
             return await sock.sendMessage(
                 chatId,
                 { text: "Download info not found." },
@@ -151,7 +159,7 @@ const downloadAndSendMedia = async (videos, chatId, event, type, sock) => {
         const tmpFileName = `${selectedVideo.title
             .replace(/[<>:"\/\\|?*\x00-\x1F]/g, "")
             .slice(0, 40)}.${format}`;
-        const tmpFilePath = path.join(os.tmpdir(), tmpFileName);
+        const tmpFilePath = path.join(__dirname, "cache", tmpFileName);
 
         const writer = fs.createWriteStream(tmpFilePath);
 
@@ -160,8 +168,11 @@ const downloadAndSendMedia = async (videos, chatId, event, type, sock) => {
             method: "GET",
             responseType: "stream",
             headers: {
+
                 "User-Agent":
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
+
+                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit /537.36 (KHTML, like Gecko) Chrome/137. 0.0.0 Mobile Safari/537.3"
+
             }
         });
 
