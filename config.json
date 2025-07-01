@@ -1,13 +1,19 @@
 {
-    "private": true,
+    "private": false,
     "number": "260767876189",
-    "admins": ["260767876189"],
+    "admins": [
+        "260767876189",
+        "90353914876012"
+    ],
     "PREFIX": "-",
     "SESSION_ID": "sypher™--ad0HkRQT#XcYXu_q7RO7p8hBtqA6NAjQIQrrZ5XrLHzk8l5Zn69w",
     "PORT": 8080,
     "autoload": true,
-    "keys": { 
-    "pastebin": "R02n6-lNPJqKQCd5VtL4bKPjuK6ARhHb",
-    "kaiz-api-key": "cc0249f7-d453-48b3-883b-27997eab0af6"},
-    "unloadedCmds": ["credits to lance"]
+    "keys": {
+        "pastebin": "R02n6-lNPJqKQCd5VtL4bKPjuK6ARhHb",
+        "kaiz": "cc0249f7-d453-48b3-883b-27997eab0af6"
+    },
+    "unloadedCmds": [
+        "credits to lance"
+    ]
 }

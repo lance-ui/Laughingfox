@@ -26,6 +26,7 @@ import fs from "fs-extra";
 import express from "express";
 import qr from "qr-image";
 import { File } from "megajs";
+import  db, { initSQLite } from "./utils/data.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -46,13 +47,12 @@ const loadConfig = async () => {
 };
 
 async function loadSessionFromMega() {
-    if (!fs.existsSync(__dirname + "/cache/auth_info_baileys/creds.json")) {
+    if (true) {
         if (!global.client.config.SESSION_ID) {
             throw new Error("Please add your session to SESSION_ID in config!");
         }
 
-        const sessdata = global;
-        client.config.SESSION_ID.replace("sypher™--", "");
+        const sessdata = global.client.config.SESSION_ID.replace("sypher™--", "");
         const filer = File.fromURL(`https://mega.nz/file/${sessdata}`);
 
         return new Promise((resolve, reject) => {
@@ -85,6 +85,7 @@ global.client = {
     startTime: Date.now()
 };
 
+await initSQLite();
 global.utils = utils;
 const { default: lance, proto } = pkg;
 const { saveCreds, font } = utils;

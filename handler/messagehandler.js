@@ -1,7 +1,7 @@
 import commandHander from "./commandHandler.js";
-import path from "path";
 import handleOnReply from "./handleOnReply.js";
-import { dirname } from "path";
+import path, { dirname } from "path";
+import { dataCache } from "../utils/data.js";
 
 import { fileURLToPath } from "url";
 
@@ -10,13 +10,35 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 export default async ({ font, sock, event, log, proto }) => {
     let senderID;
     try {
-
         const threadID = event.key.remoteJid;
-
         senderID = event.key.participant;
-        if(!senderID) {
-           senderID = threadID.split("@")[0] + "@lid" 
+        if (!senderID) {
+            senderID = threadID.split("@")[0] + "@lid"
         }
+
+        if(!dataCache.userMoney.find(user => user.id === senderID)) {
+            dataCache.userMoney.push({
+                id: senderID,
+                money: 0,
+                msgCount: 0
+            });
+        }else if(!dataCache.userData.find(user => user.id === senderID)) {
+            dataCache.userData.push({
+                id: senderID,
+                name: event.pushName || "Unknown"
+            });
+        }else if(!dataCache.prefixesData.find(user => user.id === threadID)) {
+            dataCache.prefixesData.push({
+                id: threadID,
+                prefix: global.client.config.PREFIX
+            });
+        } else  if(!dataCache.groupSettings.find(user => user.id === threadID)) {
+            dataCache.groupSettings.push({
+                id: threadID,
+                settings: {}
+            });
+        }
+        
 
         const message = {
 
@@ -235,7 +257,6 @@ export default async ({ font, sock, event, log, proto }) => {
             args = event.message.extendedTextMessage.text;
 
         }
-
         await handleOnReply({
 
             sock,
@@ -255,8 +276,10 @@ export default async ({ font, sock, event, log, proto }) => {
             bot,
 
             message,
-            
-            args
+
+            args,
+
+            dataCache
 
         });
 
@@ -285,12 +308,11 @@ export default async ({ font, sock, event, log, proto }) => {
         }
 
         if (args.toLowerCase() == "prefix") {
+            let form = '';
 
-            const form = `◣✦◥▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔◤✦◢
-
-                   𝗕𝗢𝗧 𝗣𝗥𝗘𝗙𝗜𝗫•[${global.client.config.PREFIX}]
-
-◤✦◢▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁◣✦◥`;
+            form += `◣✦◥▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔◤✦◢\n`
+            form += `𝗕𝗢𝗧 𝗣𝗥𝗘𝗙𝗜𝗫•[${global.client.config.PREFIX}]\n`.padStart(15)
+            form += `◤✦◢▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁◣✦◥`;
 
             const datapath = await path.join(
 
