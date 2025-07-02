@@ -3,7 +3,8 @@ export default {
     name: "user",
     description: "Ban or unban a user from using the bot",
     usage: ".user <@user> ban|-b or .user <@user> unban|-un",
-    role: 2,
+    role: 1,
+    category: "admin"
   },
   onRun: async ({ event, args, message, setUserBanned }) => {
     let mentionedJids =
