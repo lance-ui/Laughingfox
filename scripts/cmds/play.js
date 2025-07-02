@@ -17,7 +17,7 @@ if (!fs.existsSync(cacheFolder)) {
 export default {
   config: {
     name: "play",
-    cooldown: 30,
+    cooldown: 10,
     aliese: ["youtube", "y", "yt"],
     description: "download YouTube videos",
     category: "media",
