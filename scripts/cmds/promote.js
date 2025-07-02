@@ -4,6 +4,7 @@ export default {
     description: "Promote a user to admin",
     usage: ".promote <@user>",
     role: 2,
+    category: "group"
   },
   onRun: async ({ sock, event, args, message, threadID, getUserData }) => {
     let mentionedJids =
