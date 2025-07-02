@@ -1,3 +1,5 @@
+import db from "../../utils/data.js";
+
 export default {
   config: {
     name: "eval",
@@ -7,7 +9,7 @@ export default {
     category: "admin",
     usage: ""
   },
-  onRun: async ({ sock, args, message, bot, senderID, threadID, font,proto,event }) => {
+  onRun: async ({ sock, args, message, bot, senderID, threadID, font, proto, event }) => {
     function output(msg) {
       if (
         typeof msg == "number" ||
@@ -17,16 +19,18 @@ export default {
         msg = msg.toString();
       else if (msg instanceof Map) {
         let text = `Map(${msg.size}) `;
-        texnamet += JSON.stringify(mapToObj(msg), null, 2);
+        text += JSON.stringify(mapToObj(msg), null, 2);
         msg = text;
-      } else if (typeof msg == "object") msg = JSON.stringify(msg, null, 2);
+      } else if (typeof msg == "object")
+        msg = JSON.stringify(msg, null, 2);
       else if (typeof msg == "undefined") msg = "undefined";
-
       message.reply(msg);
     }
+
     function out(msg) {
       output(msg);
     }
+
     function mapToObj(map) {
       const obj = {};
       map.forEach(function (v, k) {
@@ -34,16 +38,24 @@ export default {
       });
       return obj;
     }
-    const cmd = `
-		(async () => {
-			try {
-				${args.join(" ")}
-			}
-			catch(err) {
-				console.error(err);
-				message.reply(err)
-			}
-		})()`;
-    eval(cmd);
+
+    try {
+      const cmd = ` (async () => { 
+        try { 
+          ${args.join(" ")} 
+        } catch(err) { 
+          throw err; 
+        } 
+      })()`;
+      const result = await eval(cmd);
+      output(result);
+    } catch (error) {
+      const errorMessage = [
+        `Error: ${error.message}`,
+        `Stack: ${error.stack}`,
+        `Name: ${error.name}`,
+      ].join("\n");
+      message.reply(errorMessage);
+    }
   },
 };
