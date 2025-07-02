@@ -1,6 +1,7 @@
 export default {
   config: {
-    name: "tid"
+    name: "tid",
+    category: "utility"
   },
   onRun: async ({message,threadID}) => {
     message.reply(threadID)
