@@ -3,7 +3,8 @@ import fs from "fs-extra";
 export default {
   config: {
     name: "config",
-    role: 1
+    role: 1,
+    category: "admin"
   },
   onRun: async ({ message, args }) => {
     if (!args[0]) return message.reply("invalid argument given");
