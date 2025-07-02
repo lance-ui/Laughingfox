@@ -21,7 +21,7 @@ async function handler({
 }) {
   try {
     const { config, cooldowns } = global.client;
-    const command = await global.client.commands.get(commandName.toLowerCase());
+    const command = await global.client.commands.get(commandName.toLowerCase()) || await global.client.alisases.get(commandName.toLowerCase());
     /**
      * handle cooldown here
      */
