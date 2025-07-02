@@ -20,7 +20,7 @@ export default {
         name: "song",
         cooldown: 10,
         aliese: ["youtube", "y", "yt"],
-        description: "download YouTube videos",
+        description: "download YouTube audio",
         category: "media"
     },
 
