@@ -8,6 +8,7 @@ export default {
         description: "Add, remove, or list bot admins",
         usage: ".admins add <@user>\n.admins remove <@user>\n.admins list",
         role: 1,
+        category: "admin"
     },
     onRun: async ({ event, args, message, getUserData }) => {
         const subcmd = (args[0] || "").toLowerCase();
