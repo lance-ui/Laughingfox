@@ -25,7 +25,14 @@ export default async ({
     font,
     message,
     bot,
-    args
+    args,
+    dataCache,
+    saveTable,
+    getPrefixesData,
+    getTable,
+    getUserData,
+    getgroupData,
+    getUserMoney
 }) => {
     const { replies, commands } = global.client;
     try {
@@ -44,7 +51,14 @@ export default async ({
                         message,
                         bot,
                         args,
-                        data
+                        data,
+                        dataCache,
+                        saveTable,
+                        getPrefixesData,
+                        getTable,
+                        getUserData,
+                        getgroupData,
+                        getUserMoney
                     });
                 }
             }

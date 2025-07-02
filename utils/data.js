@@ -11,7 +11,7 @@ const dataCache = {
   userMoney: [],
   userData: [],
   prefixesData: [],
-  groupSettings: []
+  groupData: []
 };
 
 export async function initSQLite() {
@@ -20,9 +20,9 @@ export async function initSQLite() {
 
   const tables = {
     userMoney: `CREATE TABLE IF NOT EXISTS userMoney (id TEXT PRIMARY KEY, money INTEGER, msgCount INTEGER)`,
-    userData: `CREATE TABLE IF NOT EXISTS userData (id TEXT PRIMARY KEY, banned INTEGER DEFAULT 0, name TEXT)`,
+    userData: `CREATE TABLE IF NOT EXISTS userData (id TEXT PRIMARY KEY, banned INTEGER DEFAULT 0, name TEXT, data TEXT)`,
     prefixesData: `CREATE TABLE IF NOT EXISTS prefixesData (id TEXT PRIMARY KEY, prefix TEXT)`,
-    groupSettings: `CREATE TABLE IF NOT EXISTS groupSettings (id TEXT PRIMARY KEY, settings TEXT)`
+    groupData: `CREATE TABLE IF NOT EXISTS groupData (id TEXT PRIMARY KEY, uid TEXT, msgCount INTEGER, banned INTEGER DEFAULT 0 )`
   };
 
   for (const sql of Object.values(tables)) {
@@ -32,7 +32,7 @@ export async function initSQLite() {
   dataCache.userMoney = await loadTable('userMoney');
   dataCache.userData = await loadTable('userData');
   dataCache.prefixesData = await loadTable('prefixesData');
-  dataCache.groupSettings = await loadTable('groupSettings');
+  dataCache.groupData = await loadTable('groupData');
 }
 
 function runSQL(sql, params = []) {
@@ -59,7 +59,8 @@ async function loadTable(tableName) {
     if (tableName === 'userData') {
       return rows.map(row => ({
         id: row.id,
-        data: JSON.parse(row.data)
+        name: row.name || '',
+        banned: row.banned || 0,
       }));
     }
     return rows;
@@ -81,6 +82,10 @@ export async function getTable(tableName) {
 
 export async function getUserMoney(userId) {
   const data = await getTable('userMoney');
+  if (!data || data.length === 0) {
+    console.log(`[LOG] No money data found for user ${userId}`);
+    return { money: 0, msgCount: 0 };
+  }
   const user = data.find(item => item.id === userId);
   return user ? { money: user.money, msgCount: user.msgCount } : { money: 0, msgCount: 0 };
 }   
@@ -88,7 +93,7 @@ export async function getUserMoney(userId) {
 export async function getUserData(userId) {
   const data = await getTable('userData');
   const user = data.find(item => item.id === userId);
-  return user ? user.data : {};
+  return user ? user : {};
 }
 
 export async function getPrefixesData(userId) {
@@ -97,8 +102,8 @@ export async function getPrefixesData(userId) {
   return user ? user.prefix : '';
 }
 
-export async function getGroupSettings(groupId) {
-  const data = await getTable('groupSettings');
+export async function getgroupData(groupId) {
+  const data = await getTable('groupData');
   const group = data.find(item => item.id === groupId);
   return group ? JSON.parse(group.settings) : {};
 }
@@ -120,12 +125,19 @@ export async function saveTable(tableName, data) {
     makeParams = (item) => [item.id, item.money ?? 0, item.msgCount ?? 0];
   } else if (tableName === 'userData') {
     insertSQL = `
-      INSERT INTO userData (id, data)
-      VALUES (?, ?)
+      INSERT INTO userData (id, banned, name, data)
+      VALUES (?, ?, ?, ?)
       ON CONFLICT(id) DO UPDATE SET
+        banned = excluded.banned,
+        name = excluded.name,
         data = excluded.data
     `;
-    makeParams = (item) => [item.id, JSON.stringify(item.data)];
+    makeParams = (item) => [
+      item.id,
+      item.banned ?? 0,
+      item.name ?? "",
+      item.data ? JSON.stringify(item.data) : null
+    ];
   } else if (tableName === 'prefixesData') {
     insertSQL = `
       INSERT INTO prefixesData (id, prefix)
@@ -134,14 +146,16 @@ export async function saveTable(tableName, data) {
         prefix = excluded.prefix
     `;
     makeParams = (item) => [item.id, item.prefix];
-  } else if (tableName === 'groupSettings') {
+  } else if (tableName === 'groupData') {
     insertSQL = `
-      INSERT INTO groupSettings (id, settings)
-      VALUES (?, ?)
+      INSERT INTO groupData (id, uid, msgCount, banned)
+      VALUES (?, ?, ?, ?)
       ON CONFLICT(id) DO UPDATE SET
-        settings = excluded.settings
+        uid = excluded.uid,
+        msgCount = excluded.msgCount,
+        banned = excluded.banned
     `;
-    makeParams = (item) => [item.id, item.settings];
+    makeParams = (item) => [item.id, item.uid, item.msgCount ?? 0, item.banned ?? 0];
   }
 
   for (const item of data) {
@@ -156,6 +170,6 @@ export default {
   getUserMoney,
   getUserData,
   getPrefixesData,
-  getGroupSettings,
+  getgroupData,
   saveTable
 };

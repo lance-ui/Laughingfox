@@ -1,8 +1,7 @@
 import commandHander from "./commandHandler.js";
 import handleOnReply from "./handleOnReply.js";
 import path, { dirname } from "path";
-import { dataCache } from "../utils/data.js";
-
+import { dataCache, saveTable, getPrefixesData, getTable, getUserData, getgroupData, getUserMoney } from "../utils/data.js";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -16,29 +15,43 @@ export default async ({ font, sock, event, log, proto }) => {
             senderID = threadID.split("@")[0] + "@lid"
         }
 
-        if(!dataCache.userMoney.find(user => user.id === senderID)) {
+        let updated = false;
+
+        if (!dataCache.userMoney.find(user => user.id === senderID)) {
             dataCache.userMoney.push({
                 id: senderID,
                 money: 0,
                 msgCount: 0
             });
-        }else if(!dataCache.userData.find(user => user.id === senderID)) {
+            await saveTable('userMoney', dataCache.userMoney);
+            updated = true;
+        }
+        if (!dataCache.userData.find(user => user.id === senderID)) {
             dataCache.userData.push({
                 id: senderID,
                 name: event.pushName || "Unknown"
             });
-        }else if(!dataCache.prefixesData.find(user => user.id === threadID)) {
+            await saveTable('userData', dataCache.userData);
+            updated = true;
+        }
+        if (!dataCache.prefixesData.find(user => user.id === threadID)) {
             dataCache.prefixesData.push({
                 id: threadID,
                 prefix: global.client.config.PREFIX
             });
-        } else  if(!dataCache.groupSettings.find(user => user.id === threadID)) {
-            dataCache.groupSettings.push({
-                id: threadID,
-                settings: {}
-            });
+            await saveTable('prefixesData', dataCache.prefixesData);
+            updated = true;
         }
-        
+        if (!dataCache.groupData.find(user => user.id === threadID && user.uid === senderID)) {
+            dataCache.groupData.push({
+                id: threadID,
+                uid: senderID,
+                banned: 0
+            });
+            await saveTable('groupData', dataCache.groupData);
+            updated = true;
+        }
+
 
         const message = {
 
@@ -279,11 +292,17 @@ export default async ({ font, sock, event, log, proto }) => {
 
             args,
 
-            dataCache
+            dataCache,
+            saveTable,
+            getPrefixesData,
+            getTable,
+            getUserData,
+            getgroupData,
+            getUserMoney
 
         });
-
-        const isPrefixed = args.startsWith(global.client.config.PREFIX);
+        const threadPrefix = await getPrefixesData(threadID);
+        const isPrefixed = args.startsWith(global.client.config.PREFIX) || args.startsWith(threadPrefix);
 
         if (
 
@@ -311,7 +330,8 @@ export default async ({ font, sock, event, log, proto }) => {
             let form = '';
 
             form += `◣✦◥▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔◤✦◢\n`
-            form += `𝗕𝗢𝗧 𝗣𝗥𝗘𝗙𝗜𝗫•[${global.client.config.PREFIX}]\n`.padStart(15)
+            form += `                  𝗕𝗢𝗧 𝗣𝗥𝗘𝗙𝗜𝗫•[${global.client.config.PREFIX}]\n`
+            form += `                  GROUP 𝗣𝗥𝗘𝗙𝗜𝗫•[${global.client.config.PREFIX}]\n`
             form += `◤✦◢▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁◣✦◥`;
 
             const datapath = await path.join(
@@ -330,6 +350,17 @@ export default async ({ font, sock, event, log, proto }) => {
 
             return await message.sendImage(form, datapath);
 
+        }
+        let userMoney = dataCache.userMoney.find(user => user.id === senderID);
+        if (userMoney) {
+            userMoney.msgCount = (userMoney.msgCount || 0) + 1;
+            await saveTable('userMoney', dataCache.userMoney);
+        }
+        let groupData = dataCache.groupData.find(user => user.id === threadID && user.uid === senderID);
+        if (groupData) {
+            groupData.msgCount = (groupData.msgCount || 0) + 1;
+            dataCache.groupData.push(groupData);
+            await saveTable('groupData', dataCache.groupData);
         }
 
         if (!isPrefixed) return;
@@ -376,7 +407,14 @@ export default async ({ font, sock, event, log, proto }) => {
 
             bot,
 
-            proto
+            proto,
+            dataCache,
+            saveTable,
+            getPrefixesData,
+            getTable,
+            getUserData,
+            getgroupData,
+            getUserMoney
 
         });
 

@@ -8,7 +8,14 @@ async function handler({
   bot,
   message,
   font,
-  proto
+  proto,
+  dataCache,
+  saveTable,
+  getPrefixesData,
+  getTable,
+  getUserData,
+  getgroupData,
+  getUserMoney
 }) {
   try {
     const { config, cooldowns } = global.client;
@@ -36,8 +43,8 @@ async function handler({
       .map((uid) => uid.id);
     const role = command.config?.role || 0;
     if (role == 1) {
-      if(
-!config.admins.includes(senderID.replace("@lid", ""))
+      if (
+        !config.admins.includes(senderID.replace("@lid", ""))
       ) {
         return message.reply(
           "❌ | the command that you are using can only be used by bot admins"
@@ -69,7 +76,14 @@ async function handler({
       message,
       bot,
       groupAdmins,
-      proto
+      proto,
+      dataCache,
+      saveTable,
+      getPrefixesData,
+      getTable,
+      getUserData,
+      getgroupData,
+      getUserMoney
     });
   } catch (e) {
     message.reply(

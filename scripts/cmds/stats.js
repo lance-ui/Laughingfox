@@ -9,7 +9,7 @@ export default {
     category: "general",
     role: 0,
   },
-  onRun: async ({ sock, event, threadID, args, font }) => {
+  onRun: async ({ sock, event, threadID, args, font, getTable }) => {
     const start = Date.now();
     const msg = await sock.sendMessage(threadID, {
       text: `...Loading...`,
@@ -19,8 +19,10 @@ export default {
     const cpuInfo = await si.cpu();
     const memInfo = await si.mem();
     const nodeInfo = process.versions.node;
-    const v8Info = process.versions.v8;
     const latency = Date.now() - start;
+
+    const users = await getTable("userData");
+    const threads = await getTable("groupData");
 
     const report = `
 ${font.bold("Bot Status")}
@@ -39,13 +41,11 @@ ${font.bold("System Info")}
 • Platform: ${os.platform()} (${os.arch()})
 • Hostname: ${os.hostname()}
 • Node.js: ${nodeInfo}
-• V8 Engine: ${v8Info}
 • OS: ${getOSInfo()}
 
 ${font.bold("Bot Information")}
-• Users: not yet
-• Threads: not yet
-• Contact Admin: not yet
+• Users: ${users.length}
+• Threads: ${threads.length}
 `;
 
     await sock.sendMessage(threadID, {

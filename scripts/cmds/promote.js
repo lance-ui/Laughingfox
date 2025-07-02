@@ -5,22 +5,22 @@ export default {
     usage: ".promote <@user>",
     role: 2,
   },
-  onRun: async ({ sock, event, args, message, threadID }) => {
-    if (!args[0]) {
-      return message.reply("Please mention the user you want to promote!");
-    }
+  onRun: async ({ sock, event, args, message, threadID, getUserData }) => {
+    let mentionedJids =
+      event.message?.extendedTextMessage?.contextInfo?.mentionedJid || [];
+    const jid = mentionedJids[0] || event.key.participant;
 
-    const jid = event.mentions[0] || event.key.participant;
-      console.log(jid)
     if (!jid) {
-      return message.reply("Invalid user!");
+      return message.reply("Please mention the user you want to promote!");
     }
 
     try {
       await sock.groupParticipantsUpdate(threadID, [jid], "promote");
-      await message.reply(`@${jid.split("@")[0]} has been promoted to admin!`, {
-        mentions: [jid],
-      });
+      const userData = await getUserData(jid);
+      const username = userData && userData.name ? userData.name : jid.split("@")[0];
+      await message.reply(
+        `${username} has been promoted to admin!`
+      );
     } catch (error) {
       console.error(error);
       await message.reply("Failed to promote user!");
