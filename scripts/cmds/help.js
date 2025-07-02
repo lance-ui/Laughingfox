@@ -4,15 +4,52 @@ export default {
     },
     onRun: async ({ message, font, args }) => {
         const commands = Array.from(global.client.commands.values());
+        if (args.length > 0 && !isNaN(args[0])) {
+            const pageSize = 20;
+            let page = parseInt(args[0], 10) || 1;
+            if (page < 1) page = 1;
 
+            const categories = {};
+            for (const cmd of commands) {
+                const cat = cmd.config?.category || "Uncategorized";
+                if (!categories[cat]) categories[cat] = [];
+                categories[cat].push(cmd);
+            }
+
+            const sortedCats = Object.keys(categories).sort();
+            let allLines = [];
+            for (const cat of sortedCats) {
+                allLines.push(`\n${font.bold(cat)}:`);
+                allLines.push(
+                    ...categories[cat].map(
+                        cmd => `  • ${font.mono(cmd.config.name)}: ${cmd.config.description || "no description"}`
+                    )
+                );
+            }
+
+            const totalPages = Math.ceil(allLines.length / pageSize);
+            if (page > totalPages) page = totalPages;
+
+            const start = (page - 1) * pageSize;
+            const end = start + pageSize;
+            const pageLines = allLines.slice(start, end);
+
+            let helpMessage = `📜 | ${font.bold("Command List")}\n\n`;
+            helpMessage += pageLines.join("\n") + "\n\n";
+            helpMessage += `Page: [${page}/${totalPages}] | Total Commands: [${commands.length}]\n`;
+            helpMessage += `Prefix: [${font.mono(String(global.client.config.PREFIX))}]\n`;
+            helpMessage += `Use: help <page> or help <command>\n`;
+
+            return await message.reply(helpMessage);
+        }
         if (args.length > 0) {
             const cmdName = args[0].toLowerCase();
             const cmd =
                 commands.find(
                     c =>
                         c.config.name.toLowerCase() === cmdName ||
-                        (Array.isArray(c.config.aliase) &&
-                            c.config.aliase.map(a => a.toLowerCase()).includes(cmdName))
+                        (Array.isArray(c.config.aliases) &&
+                            c.config.aliases.map(a => a.toLowerCase()).includes(cmdName))
                 );
             if (!cmd) {
                 return message.reply(`No command found with the name or alias "${cmdName}".`);
@@ -20,17 +57,19 @@ export default {
             let info = `📝 | ${font.bold("Command Info")}\n`;
             info += `Name: ${font.mono(cmd.config.name)}\n`;
             info += `Aliases: ${font.mono(
-                Array.isArray(cmd.config.aliase) && cmd.config.aliases.length
-                    ? cmd.config.aliase.join(", ")
+                Array.isArray(cmd.config.aliases) && cmd.config.aliases.length
+                    ? cmd.config.aliases.join(", ")
                     : "None"
             )}\n`;
-            info += `Usage: ${cmd.config.usage ? font.mono(cmd.config.usage) : "None"}\n`;
-            info += `Description: ${cmd.config.description || "None"}\n`;
-            info += `Version: ${cmd.config.version || "N/A"}\n`;
-            info += `Author: ${cmd.config.author || "N/A"}\n`;
-            info += `Role: ${typeof cmd.config.role !== "undefined" ? cmd.config.role : "N/A"}\n`;
+            info += `Usage: ${cmd.config.usage ? font.mono(cmd.config.usage) : "no usage info given"}\n`;
+            info += `Description: ${cmd.config.description || "no description provided"}\n`;
+            info += `Version: ${cmd.config.version || "not given"}\n`;
+            info += `Author: ${cmd.config.author || "unknown"}\n`;
+            info += `Role: ${typeof cmd.config.role !== "undefined" ? cmd.config.role : "0"}\n`;
             return message.reply(info);
         }
+        const pageSize = 20;
+        let page = 1;
 
         const categories = {};
         for (const cmd of commands) {
@@ -39,17 +78,13 @@ export default {
             categories[cat].push(cmd);
         }
 
-        const pageSize = 8;
-        let page = parseInt(args[0], 10) || 1;
-        if (page < 1) page = 1;
-
         const sortedCats = Object.keys(categories).sort();
         let allLines = [];
         for (const cat of sortedCats) {
             allLines.push(`\n${font.bold(cat)}:`);
             allLines.push(
                 ...categories[cat].map(
-                    cmd => `  • ${font.mono(cmd.config.name)}: ${cmd.config.description || ""}`
+                    cmd => `  • ${font.mono(cmd.config.name)}: ${cmd.config.description || "no description given"}`
                 )
             );
         }
@@ -61,7 +96,7 @@ export default {
         const end = start + pageSize;
         const pageLines = allLines.slice(start, end);
 
-        let helpMessage = `📜 | ${font.mono("Command List")}\n`;
+        let helpMessage = `📜 | ${font.bold("Command List")}\n\n`;
         helpMessage += pageLines.join("\n") + "\n\n";
         helpMessage += `Page: [${page}/${totalPages}] | Total Commands: [${commands.length}]\n`;
         helpMessage += `Prefix: [${font.mono(String(global.client.config.PREFIX))}]\n`;
