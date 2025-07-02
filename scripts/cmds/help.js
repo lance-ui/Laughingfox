@@ -11,8 +11,8 @@ export default {
                 commands.find(
                     c =>
                         c.config.name.toLowerCase() === cmdName ||
-                        (Array.isArray(c.config.aliases) &&
-                            c.config.aliases.map(a => a.toLowerCase()).includes(cmdName))
+                        (Array.isArray(c.config.aliase) &&
+                            c.config.aliase.map(a => a.toLowerCase()).includes(cmdName))
                 );
             if (!cmd) {
                 return message.reply(`No command found with the name or alias "${cmdName}".`);
@@ -20,8 +20,8 @@ export default {
             let info = `📝 | ${font.bold("Command Info")}\n`;
             info += `Name: ${font.mono(cmd.config.name)}\n`;
             info += `Aliases: ${font.mono(
-                Array.isArray(cmd.config.aliases) && cmd.config.aliases.length
-                    ? cmd.config.aliases.join(", ")
+                Array.isArray(cmd.config.aliase) && cmd.config.aliases.length
+                    ? cmd.config.aliase.join(", ")
                     : "None"
             )}\n`;
             info += `Usage: ${cmd.config.usage ? font.mono(cmd.config.usage) : "None"}\n`;
