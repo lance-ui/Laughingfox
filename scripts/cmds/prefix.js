@@ -8,6 +8,7 @@ export default {
     description: "Change the command prefix",
     usage: ".prefix <newPrefix> [-g]",
     role: 0,
+    category: "utility"
   },
   onRun: async ({ event, args, message, threadID, dataCache, saveTable }) => {
     if (!args[0]) {
