@@ -5,7 +5,6 @@ export default {
     onRun: async ({ message, font, args }) => {
         const commands = Array.from(global.client.commands.values());
 
-        // If user requests help for a specific command
         if (args.length > 0) {
             const cmdName = args[0].toLowerCase();
             const cmd =
@@ -33,7 +32,6 @@ export default {
             return message.reply(info);
         }
 
-        // Categorize and paginate
         const categories = {};
         for (const cmd of commands) {
             const cat = cmd.config?.category || "Uncategorized";
