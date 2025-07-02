@@ -16,7 +16,7 @@ export default {
     cooldown: 10,
     author: "JARiF",
     version: "1.2",
-    category: "MEDIA",
+    category: "media",
   },
 
   async onRun({ sock, event, args }) {
