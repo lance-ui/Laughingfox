@@ -34,7 +34,9 @@ export default {
 
         runner.on("error", error => {
             message.send(
-                `👨‍💻» | ${font.bold("Error")}\n________________________\n${error.message}`
+                `👨‍💻» | ${font.bold("Error")}\n________________________\n${
+                    error.message
+                }`
             );
         });
 
