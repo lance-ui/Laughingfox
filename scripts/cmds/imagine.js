@@ -7,7 +7,7 @@ export default {
     description: "Generate images from text prompt and send all images",
     usage: "imagine prompt --quantity 5",
     aliase: ["texttoimage"],
-    role: 1,
+    role: 0,
     category: "AI",
   },
 
