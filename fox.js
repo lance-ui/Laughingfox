@@ -82,7 +82,8 @@ global.client = {
     events: new Map(),
     replies: new Map(),
     cooldowns: new Map(),
-    startTime: Date.now()
+    startTime: Date.now(),
+    aliases: new Map()
 };
 
 await initSQLite();
