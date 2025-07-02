@@ -5,7 +5,8 @@ export default {
         name: "shell",
         description: "bash shell",
         role: 1,
-        cooldown: 5
+        cooldown: 5,
+        category: "admin"
     },
 
     onRun: async function ({ message, args, font }) {
