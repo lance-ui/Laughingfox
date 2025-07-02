@@ -1,6 +1,7 @@
 export default {
     config: {
-        name: "tagall"
+        name: "tagall",
+        category: "utility"
     },
     async onRun({ sock, message, event, args, senderID, font }) {
         if (!args.join(" "))
