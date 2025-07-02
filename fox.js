@@ -188,6 +188,9 @@ async function initialize() {
 }
 
 const app = express();
+app.get("/", (req, res) => {
+    res.json({ status: "bot is up and running" });
+});
 app.listen(global.client.config.PORT, () =>
     log.info("Bot running on port specified in config.json")
 );
