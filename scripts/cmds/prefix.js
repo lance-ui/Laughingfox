@@ -7,7 +7,7 @@ export default {
     name: "prefix",
     description: "Change the command prefix",
     usage: ".prefix <newPrefix> [-g]",
-    role: 2,
+    role: 0,
   },
   onRun: async ({ event, args, message, threadID, dataCache, saveTable }) => {
     if (!args[0]) {
@@ -21,15 +21,13 @@ export default {
     if (isGlobal) {
       const sender = event.key.participant || event.key.remoteJid;
       if (
-        !global.client.config.admins ||
-        !global.client.config.admins.includes(sender)
+        !global.client.config.admins.includes(sender.split("@")[0])
       ) {
         return message.reply("Only bot admins can change the global prefix.");
       }
       global.client.config.PREFIX = newPrefix;
       updated = true;
 
-      // Save to config.json for persistence
       const __filename = fileURLToPath(import.meta.url);
       const __dirname = path.dirname(__filename);
       const configPath = path.join(__dirname, "../../config.json");

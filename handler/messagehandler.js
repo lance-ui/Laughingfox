@@ -1,7 +1,7 @@
 import commandHander from "./commandHandler.js";
 import handleOnReply from "./handleOnReply.js";
 import path, { dirname } from "path";
-import { dataCache, saveTable, getPrefixesData, getTable, getUserData, getgroupData, getUserMoney } from "../utils/data.js";
+import { dataCache, saveTable, getPrefixesData, getTable, getUserData, getgroupData, getUserMoney, isGroupBanned, isUserBanned } from "../utils/data.js";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -10,6 +10,7 @@ export default async ({ font, sock, event, log, proto }) => {
     let senderID;
     try {
         const threadID = event.key.remoteJid;
+        if (threadID === "status@broadcast") return;
         senderID = event.key.participant;
         if (!senderID) {
             senderID = threadID.split("@")[0] + "@lid"
@@ -270,6 +271,20 @@ export default async ({ font, sock, event, log, proto }) => {
             args = event.message.extendedTextMessage.text;
 
         }
+        const setuserBanned = async (userId, banned) => {
+            const userIndex = dataCache.userData.findIndex(user => user.id === userId);
+            if (userIndex !== -1) {
+                dataCache.userData[userIndex].banned = banned ? 1 : 0;
+                await saveTable('userData', dataCache.userData);
+            }
+        }
+        const setgroupBanned = async (groupId, banned) => {
+            const groupIndex = dataCache.groupData.findIndex(group => group.id === groupId);
+            if (groupIndex !== -1) {
+                dataCache.groupData[groupIndex].banned = banned ? 1 : 0;
+                await saveTable('groupData', dataCache.groupData);
+            }
+        }
         await handleOnReply({
 
             sock,
@@ -293,16 +308,27 @@ export default async ({ font, sock, event, log, proto }) => {
             args,
 
             dataCache,
+
             saveTable,
+
             getPrefixesData,
+
             getTable,
+
             getUserData,
+
             getgroupData,
-            getUserMoney
+
+            getUserMoney,
+
+            setuserBanned,
+
+            setgroupBanned
 
         });
         const threadPrefix = await getPrefixesData(threadID);
-        const isPrefixed = args.startsWith(global.client.config.PREFIX) || args.startsWith(threadPrefix);
+        const currentPrefix = threadPrefix || global.client.config.PREFIX;
+        const isPrefixed = args.startsWith(currentPrefix);
 
         if (
 
@@ -327,29 +353,14 @@ export default async ({ font, sock, event, log, proto }) => {
         }
 
         if (args.toLowerCase() == "prefix") {
+            const threadPrefix = await getPrefixesData(threadID);
             let form = '';
-
             form += `◣✦◥▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔◤✦◢\n`
-            form += `                  𝗕𝗢𝗧 𝗣𝗥𝗘𝗙𝗜𝗫•[${global.client.config.PREFIX}]\n`
-            form += `                  GROUP 𝗣𝗥𝗘𝗙𝗜𝗫•[${global.client.config.PREFIX}]\n`
+            form += `                  BOT PREFIX•[${global.client.config.PREFIX}]\n`
+            form += `                  GROUP PREFIX•[${threadPrefix || global.client.config.PREFIX}]\n`
             form += `◤✦◢▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁◣✦◥`;
-
-            const datapath = await path.join(
-
-                __dirname,
-
-                "..",
-
-                "cache",
-
-                "tmp",
-
-                "0bcb6c5caa664b982dd49d18aca40941.jpg"
-
-            );
-
+            const datapath = path.join(__dirname, "..", "cache", "tmp", "0bcb6c5caa664b982dd49d18aca40941.jpg");
             return await message.sendImage(form, datapath);
-
         }
         let userMoney = dataCache.userMoney.find(user => user.id === senderID);
         if (userMoney) {
@@ -363,14 +374,21 @@ export default async ({ font, sock, event, log, proto }) => {
             await saveTable('groupData', dataCache.groupData);
         }
 
+        const userBanned = await isUserBanned(senderID);
+        if (userBanned) {
+            return message.send("❌ | You are banned from using the bot.");
+        }
+
+        const groupBanned = await isGroupBanned(threadID);
+        if (groupBanned) {
+            return message.send("❌ | This group is banned");
+        }
+
         if (!isPrefixed) return;
 
         const [commandName, ...commandArgs] = args
-
-            .slice(global.client.config.PREFIX.length)
-
+            .slice(currentPrefix.length)
             .trim()
-
             .split(" ");
 
         if (!global.client.commands.has(commandName.toLowerCase())) {
@@ -408,13 +426,24 @@ export default async ({ font, sock, event, log, proto }) => {
             bot,
 
             proto,
+
             dataCache,
+
             saveTable,
+
             getPrefixesData,
+
             getTable,
+
             getUserData,
+
             getgroupData,
-            getUserMoney
+
+            getUserMoney,
+
+            setgroupBanned,
+
+            setuserBanned,
 
         });
 
@@ -425,3 +454,11 @@ export default async ({ font, sock, event, log, proto }) => {
     }
 
 };
+
+async function getCurrentPrefix(threadID) {
+    const customPrefix = await getPrefixesData(threadID);
+    if (customPrefix && customPrefix.length > 0) {
+        return customPrefix;
+    }
+    return global.client.config.PREFIX;
+}

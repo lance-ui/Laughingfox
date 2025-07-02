@@ -15,7 +15,9 @@ async function handler({
   getTable,
   getUserData,
   getgroupData,
-  getUserMoney
+  getUserMoney,
+  setGroupBanned,
+  setUserBanned
 }) {
   try {
     const { config, cooldowns } = global.client;
@@ -83,7 +85,9 @@ async function handler({
       getTable,
       getUserData,
       getgroupData,
-      getUserMoney
+      getUserMoney,
+      setUserBanned,
+      setGroupBanned
     });
   } catch (e) {
     message.reply(

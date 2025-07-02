@@ -163,6 +163,44 @@ export async function saveTable(tableName, data) {
   }
 }
 
+export async function setUserBanned(userId, banned = true) {
+  const data = await getTable('userData');
+  let user = data.find(item => item.id === userId);
+  if (user) {
+    user.banned = banned ? 1 : 0;
+  } else {
+    user = { id: userId, banned: banned ? 1 : 0, name: "", data: {} };
+    data.push(user);
+  }
+  await saveTable('userData', data);
+  return user;
+}
+
+export async function isUserBanned(userId) {
+  const data = await getTable('userData');
+  const user = data.find(item => item.id === userId);
+  return user ? !!user.banned : false;
+}
+
+export async function setGroupBanned(groupId, banned = true) {
+  const data = await getTable('groupData');
+  let group = data.find(item => item.id === groupId);
+  if (group) {
+    group.banned = banned ? 1 : 0;
+  } else {
+    group = { id: groupId, uid: "", msgCount: 0, banned: banned ? 1 : 0 };
+    data.push(group);
+  }
+  await saveTable('groupData', data);
+  return group;
+}
+
+export async function isGroupBanned(groupId) {
+  const data = await getTable('groupData');
+  const group = data.find(item => item.id === groupId);
+  return group ? !!group.banned : false;
+}
+
 export { dataCache };
 export default {
   initSQLite,
