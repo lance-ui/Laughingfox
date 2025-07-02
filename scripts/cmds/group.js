@@ -6,7 +6,7 @@ export default {
     aliase: ["thread"],
     role: 2,
     description: "Opens the group so everyone can send messages",
-    category: "GROUP",
+    category: "group",
   },
 
   async onRun({ sock, event, message, args }) {
