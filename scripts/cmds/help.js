@@ -1,6 +1,7 @@
 export default {
     config: {
-        name: "help"
+        name: "help",
+        author: "lance
     },
     onRun: async ({ message, font, args }) => {
         const commands = Array.from(global.client.commands.values());
