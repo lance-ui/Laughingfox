@@ -25,7 +25,8 @@ const getSystemStats = () => {
 
 export default {
   config: {
-    name: "uptime"
+    name: "uptime",
+    category: "utility"
   },
   onRun: async ({ message, font }) => {
     const uptime = process.uptime() * 1000;
