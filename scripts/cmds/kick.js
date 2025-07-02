@@ -5,8 +5,8 @@ export default {
     version: "1.0",
     aliase: ["remove"],
     description: "Kick someone from the group by replying to their message.",
-    role: 1,
-    category: "GROUP",
+    role: 2,
+    category: "group",
   },
   onRun: async function ({ sock, event, message }) {
     const groupId = event.key.remoteJid;
