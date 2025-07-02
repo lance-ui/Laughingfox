@@ -4,7 +4,7 @@ export default {
     countdown: 5,
     role: 1,
     description: "",
-    category: "ADMIN",
+    category: "admin",
     usage: ""
   },
   onRun: async ({ sock, args, message, bot, senderID, threadID, font,proto,event }) => {
