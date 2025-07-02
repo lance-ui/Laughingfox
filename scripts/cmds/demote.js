@@ -4,6 +4,7 @@ export default {
         description: "Demote a user from admin",
         usage: ".demote <@user>",
         role: 2,
+        category: "group"
     },
     onRun: async ({ sock, event, args, message, threadID, getUserData }) => {
         let mentionedJids =
