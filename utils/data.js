@@ -209,5 +209,9 @@ export default {
   getUserData,
   getPrefixesData,
   getgroupData,
-  saveTable
+  saveTable,
+  isGroupBanned,
+  isUserBanned,
+  setUserBanned,
+  setGroupBanned
 };

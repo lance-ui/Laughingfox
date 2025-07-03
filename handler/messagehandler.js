@@ -1,7 +1,7 @@
 import commandHander from "./commandHandler.js";
 import handleOnReply from "./handleOnReply.js";
 import path, { dirname } from "path";
-import { dataCache, saveTable, getPrefixesData, getTable, getUserData, getgroupData, getUserMoney, isGroupBanned, isUserBanned } from "../utils/data.js";
+import db, { dataCache, saveTable, getPrefixesData, getTable, getUserData, getgroupData, getUserMoney, isGroupBanned, isUserBanned } from "../utils/data.js";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -273,14 +273,14 @@ export default async ({ font, sock, event, log, proto }) => {
         }
         const setuserBanned = async (userId, banned) => {
             const userIndex = dataCache.userData.findIndex(user => user.id === userId);
-            if (userIndex !== -1) {
+            if (userIndex !== 1) {
                 dataCache.userData[userIndex].banned = banned ? 1 : 0;
                 await saveTable('userData', dataCache.userData);
             }
         }
         const setgroupBanned = async (groupId, banned) => {
             const groupIndex = dataCache.groupData.findIndex(group => group.id === groupId);
-            if (groupIndex !== -1) {
+            if (groupIndex !== 1) {
                 dataCache.groupData[groupIndex].banned = banned ? 1 : 0;
                 await saveTable('groupData', dataCache.groupData);
             }
@@ -374,12 +374,12 @@ export default async ({ font, sock, event, log, proto }) => {
             await saveTable('groupData', dataCache.groupData);
         }
 
-        const userBanned = await isUserBanned(senderID);
+        const userBanned = await db.isUserBanned(senderID);
         if (userBanned) {
             return message.send("❌ | You are banned from using the bot.");
         }
 
-        const groupBanned = await isGroupBanned(threadID);
+        const groupBanned = await db.isGroupBanned(threadID);
         if (groupBanned) {
             return message.send("❌ | This group is banned");
         }
