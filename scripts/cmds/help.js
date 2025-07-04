@@ -1,9 +1,30 @@
+import path, { dirname } from "path";
+import { fileURLToPath } from "url";
+import fs from "fs-extra";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 export default {
     config: {
         name: "help",
         author: "lance"
     },
     onRun: async ({ message, font, args }) => {
+        const imagesPath = path.join(__dirname, "..", "..", "cache", "tmp");
+        const images = fs
+            .readdirSync(imagesPath)
+            .filter(file => file.endsWith(".png") || file.endsWith(".jpg"));
+        const randomImage = images[Math.floor(Math.random() * images.length)];
+        const imagePath = path.join(
+            __dirname,
+            "..",
+            "..",
+            "cache",
+            "tmp",
+            randomImage
+        );
+
         const commands = Array.from(global.client.commands.values());
         if (args.length > 0 && !isNaN(args[0])) {
             const pageSize = 20;
@@ -23,7 +44,10 @@ export default {
                 allLines.push(`\n${font.bold(cat)}:`);
                 allLines.push(
                     ...categories[cat].map(
-                        cmd => `  • ${font.mono(cmd.config.name)}: ${cmd.config.description || "no description"}`
+                        cmd =>
+                            `  • ${font.mono(cmd.config.name)}: ${
+                                cmd.config.description || "no description"
+                            }`
                     )
                 );
             }
@@ -38,22 +62,27 @@ export default {
             let helpMessage = `📜 | ${font.bold("Command List")}\n\n`;
             helpMessage += pageLines.join("\n") + "\n\n";
             helpMessage += `Page: [${page}/${totalPages}] | Total Commands: [${commands.length}]\n`;
-            helpMessage += `Prefix: [${font.mono(String(global.client.config.PREFIX))}]\n`;
+            helpMessage += `Prefix: [${font.mono(
+                String(global.client.config.PREFIX)
+            )}]\n`;
             helpMessage += `Use: help <page> or help <command>\n`;
 
-            return await message.reply(helpMessage);
+            return await message.sendImage(helpMessage, imagePath);
         }
         if (args.length > 0) {
             const cmdName = args[0].toLowerCase();
-            const cmd =
-                commands.find(
-                    c =>
-                        c.config.name.toLowerCase() === cmdName ||
-                        (Array.isArray(c.config.aliases) &&
-                            c.config.aliases.map(a => a.toLowerCase()).includes(cmdName))
-                );
+            const cmd = commands.find(
+                c =>
+                    c.config.name.toLowerCase() === cmdName ||
+                    (Array.isArray(c.config.aliases) &&
+                        c.config.aliases
+                            .map(a => a.toLowerCase())
+                            .includes(cmdName))
+            );
             if (!cmd) {
-                return message.reply(`No command found with the name or alias "${cmdName}".`);
+                return message.reply(
+                    `No command found with the name or alias "${cmdName}".`
+                );
             }
             let info = `📝 | ${font.bold("Command Info")}\n`;
             info += `Name: ${font.mono(cmd.config.name)}\n`;
@@ -62,11 +91,19 @@ export default {
                     ? cmd.config.aliases.join(", ")
                     : "None"
             )}\n`;
-            info += `Usage: ${cmd.config.usage ? font.mono(cmd.config.usage) : "no usage info given"}\n`;
-            info += `Description: ${cmd.config.description || "no description provided"}\n`;
+            info += `Usage: ${
+                cmd.config.usage
+                    ? font.mono(cmd.config.usage)
+                    : "no usage info given"
+            }\n`;
+            info += `Description: ${
+                cmd.config.description || "no description provided"
+            }\n`;
             info += `Version: ${cmd.config.version || "not given"}\n`;
             info += `Author: ${cmd.config.author || "unknown"}\n`;
-            info += `Role: ${typeof cmd.config.role !== "undefined" ? cmd.config.role : "0"}\n`;
+            info += `Role: ${
+                typeof cmd.config.role !== "undefined" ? cmd.config.role : "0"
+            }\n`;
             return message.reply(info);
         }
         const pageSize = 20;
@@ -85,7 +122,10 @@ export default {
             allLines.push(`\n${font.bold(cat)}:`);
             allLines.push(
                 ...categories[cat].map(
-                    cmd => `  • ${font.mono(cmd.config.name)}: ${cmd.config.description || "no description given"}`
+                    cmd =>
+                        `  • ${font.mono(cmd.config.name)}: ${
+                            cmd.config.description || "no description given"
+                        }`
                 )
             );
         }
@@ -100,9 +140,11 @@ export default {
         let helpMessage = `📜 | ${font.bold("Command List")}\n\n`;
         helpMessage += pageLines.join("\n") + "\n\n";
         helpMessage += `Page: [${page}/${totalPages}] | Total Commands: [${commands.length}]\n`;
-        helpMessage += `Prefix: [${font.mono(String(global.client.config.PREFIX))}]\n`;
+        helpMessage += `Prefix: [${font.mono(
+            String(global.client.config.PREFIX)
+        )}]\n`;
         helpMessage += `Use: help <page> or help <command>\n`;
 
-        await message.reply(helpMessage);
+        return await message.sendImage(helpMessage, imagePath);
     }
 };

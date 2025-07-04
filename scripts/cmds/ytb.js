@@ -142,10 +142,10 @@ const downloadAndSendMedia = async (videos, chatId, event, type,sock, body) => {
         );
 
         const format = type === "audio" ? "mp3" : "mp4";
-        const dlApiUrl = `https://kaiz-apis.gleeze.com/api/ytdl?apikey=aff47865-cc4a-4b63-82ba-628864c4b18a&url=https://m.youtube.com/watch?v=${selectedVideo.id}`;
+        const dlApiUrl = `https://kaiz-apis.gleeze.com/api/yt-down?url=${selectedVideo.url}&apikey=${global.client.config.keys.kaiz}`;
 
         const dlRes = await axios.get(dlApiUrl);
-        const dlData = dlRes.data;
+        const dlData = dlRes.data.response["360p"];
         console.log(dlData)
         if (!dlData.download_url) {
             return await sock.sendMessage(
@@ -166,14 +166,7 @@ const downloadAndSendMedia = async (videos, chatId, event, type,sock, body) => {
         const responseStream = await axios({
             url: downloadUrl,
             method: "GET",
-            responseType: "stream",
-            headers: {
-
-                "User-Agent":
-
-                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit /537.36 (KHTML, like Gecko) Chrome/137. 0.0.0 Mobile Safari/537.3"
-
-            }
+            responseType: "stream"
         });
 
         responseStream.data.pipe(writer);

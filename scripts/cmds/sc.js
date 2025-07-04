@@ -57,7 +57,7 @@ export default {
           { text: listevent },
           { quoted: event }
         );
-        global.client.replies.set(sentevent.key.id, {
+        global.client.replies.set(String(sentevent.key.id), {
           commandName: "soundcloud",
           results: results,
         });
@@ -91,7 +91,7 @@ export default {
 
       const selectedTrack = results[choice - 1];
        const url = selectedTrack.url;
-      await downloadAndSendTrack(sock, event, url, event);
+      await downloadAndSendTrack(sock, threadID, url, event);
     } catch (err) {
       console.log(err);
       message.reply(err.message);
@@ -128,16 +128,12 @@ async function downloadAndSendTrack(sock, threadID, url, event) {
       writer.on("error", reject);
     });
 
-    const audioBuffer = fs.readFileSync(filename);
-
-    await sock.sendMessage(
-      threadID,
-      {
-        audio: audioBuffer,
-        mimetype: "audio/mpeg",
-        fileName: `${title}.mp3`,
-      }
-    );
+    await sock.sendMessage(threadID,{
+        audio: { url: filename },
+        mimetype: "audio/mp3"
+    },
+     { quoted: event }
+           );
 
     fs.unlinkSync(filename);
   } catch (err) {
