@@ -37,6 +37,7 @@ export default {
     );
     if (isBotadmin) {
       message.reply("bot cannot kick bot admin");
+      return;
     }
     const isTargetAdmin =
       targetInfo.admin === "admin" || targetInfo.admin === "superadmin";

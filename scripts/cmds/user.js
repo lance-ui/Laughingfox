@@ -6,7 +6,7 @@ export default {
         role: 1,
         category: "admin"
     },
-    onRun: async ({ event, args, message, setUserBanned }) => {
+    onRun: async ({ event, args, message, setuserBanned }) => {
         let mentionedJids =
             event.message?.extendedTextMessage?.contextInfo?.mentionedJid || [];
         const jid = mentionedJids[0];
@@ -19,7 +19,7 @@ export default {
 
         const action = (args[1] || "").toLowerCase();
         if (action === "ban" || action === "-b") {
-            await setUserBanned(jid, true);
+            await setuserBanned(jid, true);
             await message.reply(
                 `@${jid.split("@")[0]} has been banned from using the bot.`,
                 {
@@ -27,7 +27,7 @@ export default {
                 }
             );
         } else if (action === "unban" || action === "-un") {
-            await setUserBanned(jid, false);
+            await setuserBanned(jid, false);
             await message.reply(`@${jid.split("@")[0]} has been unbanned.`, {
                 mentions: [jid]
             });

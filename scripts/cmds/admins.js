@@ -34,7 +34,7 @@ export default {
         if (subcmd === "add") {
             const jid = mentionedJids[0];
             if (!jid) return message.reply("Mention a user to add as admin.");
-            if (global.client.config.admins.includes(jid))
+            if (global.client.config.admins.includes(jid.split("@")[0])
                 return message.reply("User is already an admin.");
             global.client.config.admins.push(jid.split("@")[0]);
             saveConfig();
@@ -42,9 +42,9 @@ export default {
         } else if (subcmd === "remove") {
             const jid = mentionedJids[0];
             if (!jid) return message.reply("Mention a user to remove as admin.");
-            if (!global.client.config.admins.includes(jid))
+            if (!global.client.config.admins.includes(jid.split("@")[0]))
                 return message.reply("User is not an admin.");
-            global.client.config.admins = global.client.config.admins.filter(a => a !== jid);
+            global.client.config.admins = global.client.config.admins.filter(a => a !== jid.split("@")[0]);
             saveConfig();
             await message.reply("User removed from bot admins.");
         } else if (subcmd === "list") {

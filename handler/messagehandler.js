@@ -375,12 +375,12 @@ export default async ({ font, sock, event, log, proto }) => {
         }
 
         const userBanned = await db.isUserBanned(senderID);
-        if (userBanned) {
+        if (userBanned && isPrefixed && !global.client.config.admins.includes(senderID.replace("@lid", ""))) {
             return message.send("❌ | You are banned from using the bot.");
         }
 
         const groupBanned = await db.isGroupBanned(threadID);
-        if (groupBanned) {
+        if (groupBanned && isPrefixed && !global.client.config.admins.includes(senderID.replace("@lid", ""))) {
             return message.send("❌ | This group is banned");
         }
 

@@ -14,7 +14,7 @@ export default {
         const imagesPath = path.join(__dirname, "..", "..", "cache", "tmp");
         const images = fs
             .readdirSync(imagesPath)
-            .filter(file => file.endsWith(".png") || file.endsWith(".jpg"));
+            .filter(file => file.endsWith(".png") || file.endsWith(".jpg") || file.endsWith(".webp"));
         const randomImage = images[Math.floor(Math.random() * images.length)];
         const imagePath = path.join(
             __dirname,

@@ -16,8 +16,8 @@ async function handler({
   getUserData,
   getgroupData,
   getUserMoney,
-  setGroupBanned,
-  setUserBanned
+  setgroupBanned,
+  setuserBanned
 }) {
   try {
     const { config, cooldowns } = global.client;
@@ -86,8 +86,8 @@ async function handler({
       getUserData,
       getgroupData,
       getUserMoney,
-      setUserBanned,
-      setGroupBanned
+      setuserBanned,
+      setgroupBanned
     });
   } catch (e) {
     message.reply(
