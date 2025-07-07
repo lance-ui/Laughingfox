@@ -8,7 +8,13 @@ const __dirname = dirname(__filename);
 export default {
     config: {
         name: "help",
-        author: "lance"
+        author: "lance",
+        version: "1.0.0",
+        description: "Get a list of all commands or info about a specific command.",
+        usage: "help [page] or help <command>",
+        aliase: ["commands", "cmds", "menu"],
+        role: 0,
+        category: "utility"
     },
     onRun: async ({ message, font, args }) => {
         const imagesPath = path.join(__dirname, "..", "..", "cache", "tmp");

@@ -41,13 +41,10 @@ async function loadCommands() {
                         continue;
                     }
                     global.client.commands.set(command.config.name, command);
-                    if (command.config?.aliase) {
-                        global.client.aliases.set(
-                            command.config.aliase.forEach(k => {
-                                return k;
-                            }),
-                            command
-                        );
+                    if (command.config.aliase) {
+                        for (const alias of command.config.aliase) {
+                            global.client.aliases.set(alias, command);
+                        }
                     } else if (command.config.cooldown) {
                         global.client.cooldowns.set(
                             command.config.cooldown,

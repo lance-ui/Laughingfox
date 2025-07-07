@@ -43,7 +43,7 @@ export default async ({ font, sock, event, log, proto }) => {
             await saveTable('prefixesData', dataCache.prefixesData);
             updated = true;
         }
-        if (!dataCache.groupData.find(user => user.id === threadID && user.uid === senderID)) {
+        if (!dataCache.groupData.find(user => user.id === threadID && user.uid === senderID) && threadID.endsWith("@g.us")) {
             const groupMetadata = async () => {
                 const groupInfo = await sock.groupMetadata(threadID);
                 return groupInfo ? groupInfo.subject : "Unknown Group";
@@ -397,7 +397,7 @@ export default async ({ font, sock, event, log, proto }) => {
             .trim()
             .split(" ");
 
-        if (!global.client.commands.has(commandName.toLowerCase())) {
+        if (!global.client.commands.has(commandName.toLowerCase()) && !global.client.aliases.has(commandName.toLowerCase())) {
 
             await sock.sendMessage(threadID, {
 

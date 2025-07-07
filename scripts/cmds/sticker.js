@@ -7,6 +7,9 @@ export default {
     description: "Create a sticker from an image, GIF, or short video.",
     usage: ".sticker (reply to media)",
     role: 0,
+    cooldown: 5,
+    aliases: ["sticker", "stik"],
+    category: "media",
   },
   onRun: async ({ sock, event }) => {
     const quoted = event.message?.extendedTextMessage?.contextInfo?.quotedMessage;
@@ -50,7 +53,7 @@ export default {
       const sticker = new Sticker(mediaBuffer, {
         type: StickerTypes.FULL,
         pack: "Laughingfox",
-        author: "Bot",
+        author: "lance",
       });
       const stickerBuffer = await sticker.toBuffer();
       await sock.sendMessage(jid, { sticker: stickerBuffer }, { quoted: event });

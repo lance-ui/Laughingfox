@@ -4,6 +4,9 @@ export default {
     description: "Ban, unban, or list groups using the bot",
     usage: ".thread ban|-b | .thread unban|-un | .thread list|-l",
     role: 2,
+    cooldown: 5,
+    aliases: ["g"],
+    category: "group",
   },
   onRun: async ({ threadID, args, message, setgroupBanned, getTable }) => {
     const action = (args[0] || "").toLowerCase();

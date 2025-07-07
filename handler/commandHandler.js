@@ -21,7 +21,7 @@ async function handler({
 }) {
   try {
     const { config, cooldowns } = global.client;
-    const command = await global.client.commands.get(commandName.toLowerCase()) || await global.client.alisases.get(commandName.toLowerCase());
+    const command = await global.client.commands.get(commandName.toLowerCase()) || await global.client.aliases.get(commandName.toLowerCase());
     /**
      * handle cooldown here
      */
@@ -39,33 +39,36 @@ async function handler({
     /**
      * handle roles here
      */
-    const metadata = await sock.groupMetadata(threadID);
-    const groupAdmins = metadata.participants
-      .filter((ad) => ad.admin !== null)
-      .map((uid) => uid.id);
-    const role = command.config?.role || 0;
-    if (role == 1) {
-      if (
-        !config.admins.includes(senderID.replace("@lid", ""))
-      ) {
-        return message.reply(
-          "❌ | the command that you are using can only be used by bot admins"
-        );
-      }
-    }
-    if (role == 2) {
-      if (threadID.endsWith("@g.us")) {
-        if (!groupAdmins.includes(senderID)) {
+    if (threadID.endsWith("@g.us")) {
+      const metadata = await sock.groupMetadata(threadID);
+      const groupAdmins = metadata.participants
+        .filter((ad) => ad.admin !== null)
+        .map((uid) => uid.id);
+      const role = command.config?.role || 0;
+      if (role == 1) {
+        if (
+          !config.admins.includes(senderID.replace("@lid", ""))
+        ) {
           return message.reply(
-            "❌ | the command that you are using can only be used by group admins"
+            "❌ | the command that you are using can only be used by bot admins"
           );
         }
-      } else {
-        message.reply(
-          "❌ | the command that you are using can only be used in groups"
-        );
+      }
+      if (role == 2) {
+        if (threadID.endsWith("@g.us")) {
+          if (!groupAdmins.includes(senderID)) {
+            return message.reply(
+              "❌ | the command that you are using can only be used by group admins"
+            );
+          }
+        } else {
+          message.reply(
+            "❌ | the command that you are using can only be used in groups"
+          );
+        }
       }
     }
+
 
     return await command.onRun({
       sock,
@@ -77,7 +80,6 @@ async function handler({
       commandName,
       message,
       bot,
-      groupAdmins,
       proto,
       dataCache,
       saveTable,

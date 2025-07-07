@@ -6,7 +6,7 @@ export default {
         usage: "profile [mention or reply]",
         aliase: ["pfp"],
         role: 1,
-        category: "UTILITY"
+        category: "utility"
     },
 
     async onRun({ sock, event }) {

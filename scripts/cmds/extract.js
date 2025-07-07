@@ -6,6 +6,9 @@ export default {
     description: "Extract and resend view-once images, videos, or audio.",
     usage: ".extract (reply to view-once media)",
     role: 0,
+    cooldown: 5,
+    aliases: ["extract", "ex"],
+    category: "media",
   },
   onRun: async ({ sock, event }) => {
     const quoted = event.message?.extendedTextMessage?.contextInfo?.quotedMessage;
