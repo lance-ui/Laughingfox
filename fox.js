@@ -26,22 +26,30 @@ import fs from "fs-extra";
 import express from "express";
 import qr from "qr-image";
 import { File } from "megajs";
-import  db, { initSQLite } from "./utils/data.js";
-import cron from 'node-cron';
-import moment from 'moment-timezone';
+import db, { initSQLite } from "./utils/data.js";
+import cron from "node-cron";
+import moment from "moment-timezone";
 
-const tz = 'Africa/Lusaka';
+const tz = "Africa/Lusaka";
 
-function hourlyTask() {
-  log.info(`Hourly task executed at ${moment().tz(tz).format('YYYY-MM-DD HH:mm:ss')}`);
-  process.exit(2)
+function tasks() {
+    log.info(
+        `Hourly task executed at ${moment()
+            .tz(tz)
+            .format("YYYY-MM-DD HH:mm:ss")}`
+    );
+    process.exit(2);
 }
 
-cron.schedule('0 * * * *', () => {
-  hourlyTask();
-}, {
-  timezone: tz
-});
+cron.schedule(
+    "0 * * * *",
+    () => {
+        tasks();
+    },
+    {
+        timezone: tz
+    }
+);
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -67,7 +75,10 @@ async function loadSessionFromMega() {
             throw new Error("Please add your session to SESSION_ID in config!");
         }
 
-        const sessdata = global.client.config.SESSION_ID.replace("sypher™--", "");
+        const sessdata = global.client.config.SESSION_ID.replace(
+            "sypher™--",
+            ""
+        );
         const filer = File.fromURL(`https://mega.nz/file/${sessdata}`);
 
         return new Promise((resolve, reject) => {
@@ -78,9 +89,9 @@ async function loadSessionFromMega() {
                     data,
                     err => {
                         if (err) {
-                          log.error("failed to load creds from mega")
-                          process.exit(2)
-                        };
+                            log.error("failed to load creds from mega");
+                            process.exit(2);
+                        }
                         log.success("Session downloaded from Mega.nz ✅");
                         resolve();
                     }
@@ -106,7 +117,7 @@ global.utils = utils;
 const { default: lance, proto } = pkg;
 const { saveCreds, font } = utils;
 async function main() {
-    await loadSessionFromMega()
+    await loadSessionFromMega();
     log.info("Starting bot...");
     const sessionDir = path.join(__dirname, "cache", "auth_info_baileys");
     await fs.ensureDir(sessionDir);
