@@ -5,7 +5,7 @@ export default {
     usage: ".thread ban|-b | .thread unban|-un | .thread list|-l",
     role: 2,
     cooldown: 5,
-    aliases: ["g"],
+    aliases: ["g","td"],
     category: "group",
   },
   onRun: async ({ threadID, args, message, setgroupBanned, getTable }) => {
