@@ -34,7 +34,7 @@ export default {
         if (subcmd === "add") {
             const jid = mentionedJids[0];
             if (!jid) return message.reply("Mention a user to add as admin.");
-            if (global.client.config.admins.includes(jid.split("@")[0])
+            if (global.client.config.admins.includes(jid.split("@")[0])) 
                 return message.reply("User is already an admin.");
             global.client.config.admins.push(jid.split("@")[0]);
             saveConfig();

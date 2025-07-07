@@ -22,7 +22,7 @@ export async function initSQLite() {
     userMoney: `CREATE TABLE IF NOT EXISTS userMoney (id TEXT PRIMARY KEY, money INTEGER, msgCount INTEGER)`,
     userData: `CREATE TABLE IF NOT EXISTS userData (id TEXT PRIMARY KEY, banned INTEGER DEFAULT 0, name TEXT, data TEXT)`,
     prefixesData: `CREATE TABLE IF NOT EXISTS prefixesData (id TEXT PRIMARY KEY, prefix TEXT)`,
-    groupData: `CREATE TABLE IF NOT EXISTS groupData (id TEXT PRIMARY KEY, uid TEXT, msgCount INTEGER, banned INTEGER DEFAULT 0 )`
+    groupData: `CREATE TABLE IF NOT EXISTS groupData (id TEXT PRIMARY KEY, name TEXT,uid TEXT, msgCount INTEGER, banned INTEGER DEFAULT 0 )`
   };
 
   for (const sql of Object.values(tables)) {
@@ -87,7 +87,7 @@ export async function getUserMoney(userId) {
     return { money: 0, msgCount: 0 };
   }
   const user = data.find(item => item.id === userId);
-  return user ? { money: user.money, msgCount: user.msgCount } : { money: 0, msgCount: 0 };
+  return user ? user : { money: 0, msgCount: 0 };
 }   
 
 export async function getUserData(userId) {
@@ -148,14 +148,15 @@ export async function saveTable(tableName, data) {
     makeParams = (item) => [item.id, item.prefix];
   } else if (tableName === 'groupData') {
     insertSQL = `
-      INSERT INTO groupData (id, uid, msgCount, banned)
-      VALUES (?, ?, ?, ?)
+      INSERT INTO groupData (id, name, uid, msgCount, banned)
+      VALUES (?, ?, ?, ?, ?)
       ON CONFLICT(id) DO UPDATE SET
+        name = excluded.name,
         uid = excluded.uid,
         msgCount = excluded.msgCount,
         banned = excluded.banned
     `;
-    makeParams = (item) => [item.id, item.uid, item.msgCount ?? 0, item.banned ?? 0];
+    makeParams = (item) => [item.id, item.name, item.uid, item.msgCount ?? 0, item.banned ?? 0];
   }
 
   for (const item of data) {

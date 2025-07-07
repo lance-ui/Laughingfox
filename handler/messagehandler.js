@@ -44,8 +44,14 @@ export default async ({ font, sock, event, log, proto }) => {
             updated = true;
         }
         if (!dataCache.groupData.find(user => user.id === threadID && user.uid === senderID)) {
+            const groupMetadata = async () => {
+                const groupInfo = await sock.groupMetadata(threadID);
+                return groupInfo ? groupInfo.subject : "Unknown Group";
+            }
+            const groupName = await groupMetadata();
             dataCache.groupData.push({
                 id: threadID,
+                name: groupName,
                 uid: senderID,
                 banned: 0
             });
