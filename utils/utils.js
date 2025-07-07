@@ -6,10 +6,13 @@ import fs from "fs-extra";
 import { fileURLToPath } from "url";
 import font from "./fonts.js";
 import schedule from "node-schedule";
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 async function loadCommands() {
+    Object.keys(require.cache).forEach(key => delete require.cache[key]);
     const errs = {};
     const commandsPath = path.join(__dirname, "..", "scripts", "cmds");
 
@@ -63,6 +66,7 @@ async function loadCommands() {
     return Object.keys(errs).length === 0 ? false : errs;
 }
 async function loadEvents() {
+    Object.keys(require.cache).forEach(key => delete require.cache[key]);
     log.info("loading events");
     const __dirname = dirname(fileURLToPath(import.meta.url));
     const eventsPath = path.join(__dirname, "..", "scripts", "events");
