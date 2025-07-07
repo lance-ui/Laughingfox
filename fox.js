@@ -27,6 +27,21 @@ import express from "express";
 import qr from "qr-image";
 import { File } from "megajs";
 import  db, { initSQLite } from "./utils/data.js";
+import cron from 'node-cron';
+import moment from 'moment-timezone';
+
+const tz = 'Africa/Lusaka';
+
+function hourlyTask() {
+  log.info(`Hourly task executed at ${moment().tz(tz).format('YYYY-MM-DD HH:mm:ss')}`);
+  process.exit(2)
+}
+
+cron.schedule('0 * * * *', () => {
+  hourlyTask();
+}, {
+  timezone: tz
+});
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
