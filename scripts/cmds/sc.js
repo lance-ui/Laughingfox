@@ -57,7 +57,7 @@ export default {
           { text: listevent },
           { quoted: event }
         );
-        global.client.replies.set(String(sentevent.key.id), {
+        global.client.replies.set(sentevent.key.id, {
           commandName: "soundcloud",
           results: results,
         });
@@ -79,7 +79,7 @@ export default {
       message.reply("❌ Please reply with your selection as text.");
     const choice = parseInt(args);
     try {
-      if (isNaN(choice) || choice < 1 || choice > results.length) {
+      if (isNaN(choice) || choice < 1 || choice > 5) {
         return await sock.sendMessage(
           threadID,
           {
