@@ -1,7 +1,10 @@
 import fs from "fs";
-import path from "path";
+import path , { dirname } from "path";
 import sharp from "sharp";
 import { downloadContentFromMessage } from "@whiskeysockets/baileys";
+import { fileURLToPath } from "url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 export default {
   config: {
@@ -37,7 +40,7 @@ export default {
         .jpeg()
         .toBuffer();
 
-      const filePath = path.join(__dirname, "../tmp/tmp-pfp.jpg");
+      const filePath = path.join(__dirname,"cache", "tmp-pfp.jpg");
       fs.writeFileSync(filePath, resizedBuffer);
 
       await sock.updateProfilePicture(sock.user.id, resizedBuffer);
