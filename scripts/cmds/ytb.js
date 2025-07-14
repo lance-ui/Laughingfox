@@ -5,7 +5,7 @@ import os from "os";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default {
     config: {
@@ -13,7 +13,8 @@ export default {
         cooldown: 30,
         aliese: ["youtube", "y", "yt"],
         description: "download YouTube videos",
-        category: "media"
+        category: "media",
+        usage: `${global.client.config.PREFIX}ytb -a|-v <your query>`
     },
 
     async onRun({ sock, event, args }) {
@@ -109,7 +110,14 @@ export default {
     onReply: async ({ sock, event, args, data, threadID, senderID }) => {
         const { videos, type } = data;
         try {
-            await downloadAndSendMedia(videos, threadID, event, type,sock,args);
+            await downloadAndSendMedia(
+                videos,
+                threadID,
+                event,
+                type,
+                sock,
+                args
+            );
         } catch (err) {
             console.log(err);
             message.reply(
@@ -119,7 +127,55 @@ export default {
     }
 };
 
-const downloadAndSendMedia = async (videos, chatId, event, type,sock, body) => {
+const getData = async (url, type) => {
+    try {
+        const start = new Date();
+        const response = await axios.post(
+            "https://ytdownload.in/api/allinonedownload",
+            {
+                contentType: type,
+                quality: null,
+                url: url
+            },
+            {
+                headers: {
+                    Accept: "*/*",
+                    "Accept-Encoding": "gzip, deflate, br, zstd",
+                    "Accept-Language": "en-US,en;q=0.5",
+                    Connection: "keep-alive",
+                    "Content-Type": "application/json",
+                    Cookie: "_ga_YLV6Y36HY1=GS1.1.1746473863.1.1.1746473912.0.0.0; _ga=GA1.1.739180884.1746473864",
+                    Host: "ytdownload.in",
+                    Origin: "https://ytdownload.in",
+                    Priority: "u=0",
+                    Referer: "https://ytdownload.in/",
+                    "Sec-Fetch-Dest": "empty",
+                    "Sec-Fetch-Mode": "cors",
+                    "Sec-Fetch-Site": "same-origin",
+                    "User-Agent":
+                        "Mozilla/5.0 (X11; Linux x86_64; rv:137.0) Gecko/20100101 Firefox/137.0"
+                }
+            }
+        );
+        if (response.data.responseFinal) {
+            const end = new Date();
+            const time = (end - start) / 1000;
+            response.data["timetaken"] = time + " seconds";
+        }
+        return response.data.responseFinal;
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+const downloadAndSendMedia = async (
+    videos,
+    chatId,
+    event,
+    type,
+    sock,
+    body
+) => {
     try {
         const choice = parseInt(body.trim());
         if (isNaN(choice) || choice < 1 || choice > videos.length) {
@@ -133,8 +189,6 @@ const downloadAndSendMedia = async (videos, chatId, event, type,sock, body) => {
         }
 
         const selectedVideo = videos[choice - 1];
-        console.log(selectedVideo)
-
         await sock.sendMessage(
             chatId,
             { text: `Fetching your ${type} from:\n${selectedVideo.title}` },
@@ -142,12 +196,13 @@ const downloadAndSendMedia = async (videos, chatId, event, type,sock, body) => {
         );
 
         const format = type === "audio" ? "mp3" : "mp4";
-        const dlApiUrl = `https://kaiz-apis.gleeze.com/api/yt-down?url=${selectedVideo.url}&apikey=${global.client.config.keys.kaiz}`;
+        const dlData = await getData(
+            String(selectedVideo.url),
+            String(type === "audio" ? "audio" : "video")
+        );
 
-        const dlRes = await axios.get(dlApiUrl);
-        const dlData = dlRes.data.response["360p"];
-        console.log(dlData)
-        if (!dlData.download_url) {
+        console.log(dlData);
+        if (!dlData.videoUrl) {
             return await sock.sendMessage(
                 chatId,
                 { text: "Download info not found." },
@@ -155,7 +210,7 @@ const downloadAndSendMedia = async (videos, chatId, event, type,sock, body) => {
             );
         }
 
-        const downloadUrl = dlData.download_url;
+        const downloadUrl = dlData.videoUrl;
         const tmpFileName = `${selectedVideo.title
             .replace(/[<>:"\/\\|?*\x00-\x1F]/g, "")
             .slice(0, 40)}.${format}`;
