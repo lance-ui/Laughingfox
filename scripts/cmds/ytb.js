@@ -197,12 +197,12 @@ const downloadAndSendMedia = async (
 
         const format = type === "audio" ? "mp3" : "mp4";
         const dlData = await getData(
-            String(selectedVideo.url),
+            String("https://www.youtube.com/watch?v=" + selectedVideo.id),
             String(type === "audio" ? "audio" : "video")
         );
 
         console.log(dlData);
-        if (!dlData.videoUrl) {
+        if (!dlData || !dlData.videoUrl) {
             return await sock.sendMessage(
                 chatId,
                 { text: "Download info not found." },

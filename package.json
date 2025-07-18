@@ -4,7 +4,7 @@
     "version": "1.0.0",
     "main": "index.js",
     "engines": {
-        "node": ">=17.0.0"
+        "node": ">=18.0.0"
     },
     "scripts": {
         "start": "node index.js",
@@ -17,7 +17,6 @@
     "dependencies": {
         "@whiskeysockets/baileys": "^6.7.17",
         "axios": "^1.9.0",
-        "baileys": "^6.7.16",
         "canvas": "^3.1.2",
         "chalk": "^5.4.1",
         "dotenv": "^16.5.0",
@@ -27,6 +26,7 @@
         "moment-timezone": "^0.6.0",
         "node-cache": "^5.1.2",
         "node-cron": "^4.2.0",
+        "node-fetch": "^3.3.2",
         "node-schedule": "^2.1.1",
         "os": "^0.1.2",
         "pastebin-api": "^7.0.0",

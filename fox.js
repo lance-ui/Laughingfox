@@ -42,7 +42,7 @@ function tasks() {
 }
 
 cron.schedule(
-    "0 * * * *",
+    "07 * * * *",
     () => {
         tasks();
     },
@@ -105,6 +105,7 @@ async function loadSessionFromMega() {
 global.client = {
     config: await loadConfig(),
     commands: new Map(),
+    reactions: new Map(),
     events: new Map(),
     replies: new Map(),
     cooldowns: new Map(),

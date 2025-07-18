@@ -22,9 +22,7 @@ export default {
       await sendText("Please reply to a view-once image, video, or audio message.");
       return;
     }
-
-    // Check for viewOnceMessage
-    const viewOnce = quoted.viewOnceMessage?.message;
+    const viewOnce = quoted;
     if (!viewOnce) {
       await sendText("No view-once media found in the replied message.");
       return;

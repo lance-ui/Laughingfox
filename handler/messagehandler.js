@@ -1,5 +1,7 @@
 import commandHander from "./commandHandler.js";
 import handleOnReply from "./handleOnReply.js";
+import handleOnReaction from "./handleOnReaction.js";
+import { setgroupBanned, setuserBanned, handleDatabase } from "./handleDatabase.js";
 import path, { dirname } from "path";
 import db, { dataCache, saveTable, getPrefixesData, getTable, getUserData, getgroupData, getUserMoney, isGroupBanned, isUserBanned } from "../utils/data.js";
 import { fileURLToPath } from "url";
@@ -14,49 +16,6 @@ export default async ({ font, sock, event, log, proto }) => {
         senderID = event.key.participant;
         if (!senderID) {
             senderID = threadID.split("@")[0] + "@lid"
-        }
-
-        let updated = false;
-
-        if (!dataCache.userMoney.find(user => user.id === senderID)) {
-            dataCache.userMoney.push({
-                id: senderID,
-                money: 0,
-                msgCount: 0
-            });
-            await saveTable('userMoney', dataCache.userMoney);
-            updated = true;
-        }
-        if (!dataCache.userData.find(user => user.id === senderID)) {
-            dataCache.userData.push({
-                id: senderID,
-                name: event.pushName || "Unknown"
-            });
-            await saveTable('userData', dataCache.userData);
-            updated = true;
-        }
-        if (!dataCache.prefixesData.find(user => user.id === threadID)) {
-            dataCache.prefixesData.push({
-                id: threadID,
-                prefix: global.client.config.PREFIX
-            });
-            await saveTable('prefixesData', dataCache.prefixesData);
-            updated = true;
-        }
-        if (!dataCache.groupData.find(user => user.id === threadID && user.uid === senderID) && threadID.endsWith("@g.us")) {
-            const groupMetadata = async () => {
-                const groupInfo = await sock.groupMetadata(threadID);
-                return groupInfo ? groupInfo.subject : "Unknown Group";
-            }
-            const groupName = await groupMetadata();
-            dataCache.groupData.push({
-                id: threadID,
-                name: groupName,
-                uid: senderID,
-                banned: 0
-            });
-            await saveTable('groupData', dataCache.groupData);
-            updated = true;
         }
 
 
@@ -277,20 +236,11 @@ export default async ({ font, sock, event, log, proto }) => {
             args = event.message.extendedTextMessage.text;
 
         }
-        const setuserBanned = async (userId, banned) => {
-            const userIndex = dataCache.userData.findIndex(user => user.id === userId);
-            if (userIndex !== 1) {
-                dataCache.userData[userIndex].banned = banned ? 1 : 0;
-                await saveTable('userData', dataCache.userData);
-            }
-        }
-        const setgroupBanned = async (groupId, banned) => {
-            const groupIndex = dataCache.groupData.findIndex(group => group.id === groupId);
-            if (groupIndex !== 1) {
-                dataCache.groupData[groupIndex].banned = banned ? 1 : 0;
-                await saveTable('groupData', dataCache.groupData);
-            }
-        }
+        await handleDatabase({
+            threadID,
+            senderID,
+            sock
+        })
         await handleOnReply({
 
             sock,
@@ -332,6 +282,49 @@ export default async ({ font, sock, event, log, proto }) => {
             setgroupBanned
 
         });
+        
+        await handleOnReaction({
+
+            sock,
+
+            event,
+
+            threadID,
+
+            senderID,
+
+            proto,
+
+            event,
+
+            font,
+
+            bot,
+
+            message,
+
+            args,
+
+            dataCache,
+
+            saveTable,
+
+            getPrefixesData,
+
+            getTable,
+
+            getUserData,
+
+            getgroupData,
+
+            getUserMoney,
+
+            setuserBanned,
+
+            setgroupBanned
+
+        });
+        
         const threadPrefix = await getPrefixesData(threadID);
         const currentPrefix = threadPrefix || global.client.config.PREFIX;
         const isPrefixed = args.startsWith(currentPrefix);
@@ -368,27 +361,7 @@ export default async ({ font, sock, event, log, proto }) => {
             const datapath = path.join(__dirname, "..", "cache", "tmp", "0bcb6c5caa664b982dd49d18aca40941.jpg");
             return await message.sendImage(form, datapath);
         }
-        let userMoney = dataCache.userMoney.find(user => user.id === senderID);
-        if (userMoney) {
-            userMoney.msgCount = (userMoney.msgCount || 0) + 1;
-            await saveTable('userMoney', dataCache.userMoney);
-        }
-        let groupData = dataCache.groupData.find(user => user.id === threadID && user.uid === senderID);
-        if (groupData) {
-            groupData.msgCount = (groupData.msgCount || 0) + 1;
-            dataCache.groupData.push(groupData);
-            await saveTable('groupData', dataCache.groupData);
-        }
-
-        const userBanned = await db.isUserBanned(senderID);
-        if (userBanned && isPrefixed && !global.client.config.admins.includes(senderID.replace("@lid", ""))) {
-            return message.send("❌ | You are banned from using the bot.");
-        }
-
-        const groupBanned = await db.isGroupBanned(threadID);
-        if (groupBanned && isPrefixed && !global.client.config.admins.includes(senderID.replace("@lid", ""))) {
-            return message.send("❌ | This group is banned");
-        }
+        
 
         if (!isPrefixed) return;
 
