@@ -19,33 +19,42 @@ const initCache = async () => {
 
 initCache();
 
-const OMIT = 30 * 60 * 1000; // 30 minutes
+const OMIT = 2 * 60 * 1000; // 2 minutes
 
 const saveData = async () => {
   try {
     await saveTable('userMoney', Array.from(userMoneyMap.values()));
     await saveTable('userData', Array.from(userDataMap.values()));
     await saveTable('prefixesData', Array.from(prefixesDataMap.values()));
-    await saveTable('groupData', Array.from(groupDataMap.values()).map((group) => ({ id: group.id, name: group.name, uid: group.uid, banned: group.banned })));
-    
-    
-    userMoneyMap.clear()
-    userDataMap.clear()
-    prefixesDataMap.clear()
-    groupDataMap.clear()
-    
-    await initCache()
+    await saveTable(
+      'groupData',
+      Array.from(groupDataMap.values()).map((group) => ({
+        id: group.id,
+        name: group.name,
+        uid: group.uid,
+        banned: group.banned,
+        msgCount: group.msgCount || 0,
+      }))
+    );
   } catch (error) {
     console.error("Error saving data:", error);
   }
 };
 
+// Save every OMIT ms
 setInterval(saveData, OMIT);
 
-process.on('exit', saveData);
-process.on('SIGINT', saveData);
-process.on('SIGUSR1', saveData);
-process.on('SIGUSR2', saveData);
+// Graceful shutdown (ensure async save completes)
+const shutdown = async () => {
+  await saveData();
+  process.exit(0);
+};
+
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
+process.on('SIGUSR1', shutdown);
+process.on('SIGUSR2', shutdown);
+process.on('exit', () => {});
 
 const handleDatabase = async ({ threadID, senderID, sock }) => {
   try {

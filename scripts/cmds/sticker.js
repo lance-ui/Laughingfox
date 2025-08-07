@@ -52,7 +52,7 @@ export default {
     try {
       const sticker = new Sticker(mediaBuffer, {
         type: StickerTypes.FULL,
-        pack: "Laughingfox",
+        pack: "sypher",
         author: "lance",
       });
       const stickerBuffer = await sticker.toBuffer();
