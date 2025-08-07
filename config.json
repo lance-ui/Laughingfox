@@ -1,18 +1,9 @@
 {
   "private": false,
-  "number": "260767876189",
-  "admins": [
-    "260779581882",
-    "260767876189",
-    "90353914876012",
-    "194068181201013",
-    "88176282570867",
-    "267890515279918",
-    "64905864577195",
-    "174264556720272"
-  ],
+  "number": "",
+  "admins": [],
   "PREFIX": "+",
-  "SESSION_ID": "sypher™--hash",//replace hash with actual hash from mega
+  "SESSION_ID": "sypher™--hash",
   "PORT": 8080,
   "autoload": true,
   "keys": {
@@ -22,5 +13,5 @@
   "unloadedCmds": [
     "credits to lance"
   ],
-  "botname": "sypher™"
+  "botname": ""
 }
