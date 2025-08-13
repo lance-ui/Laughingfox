@@ -67,6 +67,19 @@ async function handler({
           );
         }
       }
+    }else{
+      if (role == 1) {
+        if (
+          !config.admins.includes(senderID.replace("@lid", ""))
+        ) {
+          return message.reply(
+            "❌ | the command that you are using can only be used by bot admins"
+          );
+        }
+      }
+      if(role == 2){
+        message.reply("❌ | This cmd only works in groups")
+      }
     }
 
 
