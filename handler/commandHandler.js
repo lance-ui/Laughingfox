@@ -39,12 +39,12 @@ async function handler({
     /**
      * handle roles here
      */
+    const role = command.config?.role || 0;
     if (threadID.endsWith("@g.us")) {
       const metadata = await sock.groupMetadata(threadID);
       const groupAdmins = metadata.participants
         .filter((ad) => ad.admin !== null)
         .map((uid) => uid.id);
-      const role = command.config?.role || 0;
       if (role == 1) {
         if (
           !config.admins.includes(senderID.replace("@lid", ""))
@@ -61,11 +61,7 @@ async function handler({
               "❌ | the command that you are using can only be used by group admins"
             );
           }
-        } else {
-          message.reply(
-            "❌ | the command that you are using can only be used in groups"
-          );
-        }
+        } e
       }
     }else{
       if (role == 1) {
