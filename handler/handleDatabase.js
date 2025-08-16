@@ -90,16 +90,6 @@ const handleDatabase = async ({ threadID, senderID, sock }) => {
       groupData.msgCount = (groupData.msgCount || 0) + 1;
       groupDataMap.set(`${threadID}-${senderID}`, groupData);
     }
-
-    const userBanned = await db.isUserBanned(senderID);
-    if (userBanned && !global.client.config.admins.includes(senderID.replace("@lid", ""))) {
-      return message.send("❌ | You are banned from using the bot.");
-    }
-
-    const groupBanned = await db.isGroupBanned(threadID);
-    if (groupBanned && !global.client.config.admins.includes(senderID.replace("@lid", ""))) {
-      return message.send("❌ | This group is banned");
-    }
   } catch (e) {
     console.log(e.message);
   }
