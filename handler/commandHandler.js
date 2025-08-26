@@ -61,24 +61,44 @@ async function handler({
               "❌ | the command that you are using can only be used by group admins"
             );
           }
-        } e
+        } else {
+          message.reply(
+            "❌ | the command that you are using can only be used in groups"
+          );
+        }
       }
     }else{
       if (role == 1) {
-        if (
-          !config.admins.includes(senderID.replace("@lid", ""))
-        ) {
+        if (!event.key.fromMe) {
           return message.reply(
             "❌ | the command that you are using can only be used by bot admins"
           );
         }
       }
-      if(role == 2){
-        message.reply("❌ | This cmd only works in groups")
-      }
     }
-
-
+    if(command?.onLoad){
+      await command.onLoad({
+      sock,
+      event,
+      args,
+      threadID,
+      senderID,
+      font,
+      commandName,
+      message,
+      bot,
+      proto,
+      dataCache,
+      saveTable,
+      getPrefixesData,
+      getTable,
+      getUserData,
+      getgroupData,
+      getUserMoney,
+      setuserBanned,
+      setgroupBanned
+    });
+    }
     return await command.onRun({
       sock,
       event,
